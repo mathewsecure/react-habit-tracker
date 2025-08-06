@@ -1,7 +1,10 @@
+import HabitsTable from "./components/HabitsTable";
+
 function App() {
   return (
     <>
-      <div>Calendar</div>
+      <div>Calendar Habit Tracker</div>
+      <HabitsTable />
     </>
   );
 }
