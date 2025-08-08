@@ -45,6 +45,17 @@ const HabitsTable = () => {
           ))}
         </tbody>
       </table>
+      <div>Habits rendering test</div>
+      <ul>
+        {habits.map((habit) => {
+          return (
+            <li key={habit.id}>
+              <div>{habit.habit}</div>
+              <div>{habit.completed}</div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 };
