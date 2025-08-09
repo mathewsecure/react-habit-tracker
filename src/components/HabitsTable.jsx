@@ -1,6 +1,7 @@
 /* https://www.geeksforgeeks.org/reactjs/how-to-create-a-table-in-reactjs/ */
 import { useEffect, useState } from "react";
 import "./HabitsTable.css";
+
 const HabitsTable = () => {
   const [habits, setHabits] = useState(
     []
@@ -18,6 +19,7 @@ const HabitsTable = () => {
         setHabits(data.habits); /* data is an object, {habits: Array(n)} */
       });
   }, []);
+
   const habitsPerPage = 10;
   const indexOfLastHabit = currentPage * habitsPerPage;
   const indexOfFirstHabit = indexOfLastHabit - habitsPerPage;
@@ -27,13 +29,17 @@ const HabitsTable = () => {
     setCurrentPage(page);
   };
 
+  const date = new Date();
+  const dateArray = [];
+  dateArray.push(date.toDateString());
+  console.log(dateArray);
   return (
     <div>
       <table>
         <thead>
           <tr>
             <th>Habit</th>
-            <th>Completion</th>
+            <th>Completion date: {date.toDateString()}</th>
           </tr>
         </thead>
         <tbody>
@@ -45,6 +51,23 @@ const HabitsTable = () => {
           ))}
         </tbody>
       </table>
+      <div>
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === Math.ceil(habits.length / habitsPerPage)}
+        >
+          Next
+        </button>
+        <div>
+          Page {currentPage} of {Math.ceil(habits.length / habitsPerPage)}
+        </div>
+      </div>
     </div>
   );
 };
