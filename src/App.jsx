@@ -3,7 +3,7 @@ import HabitsTable from "./components/HabitsTable";
 function App() {
   return (
     <>
-      <h3>Calendar Habit Tracker</h3>
+      <h3>Daily habit tracker</h3>
       <HabitsTable />
     </>
   );
