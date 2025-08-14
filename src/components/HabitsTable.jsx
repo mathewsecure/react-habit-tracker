@@ -29,17 +29,23 @@ const HabitsTable = () => {
     setCurrentPage(page);
   };
 
-  const date = new Date();
   const dateArray = [];
-  dateArray.push(date.toDateString());
+  const date = new Date();
+
+  if (!dateArray.includes(date)) {
+    dateArray.push(date.toDateString());
+  }
+
   console.log(dateArray);
+  console.log("currentPage: ", currentPage);
+
   return (
     <div>
       <table>
         <thead>
           <tr>
             <th>Habit</th>
-            <th>Completion date: {date.toDateString()}</th>
+            <th>Completion date: {dateArray[currentPage - 1]}</th>
           </tr>
         </thead>
         <tbody>
