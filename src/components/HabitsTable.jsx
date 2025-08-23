@@ -7,6 +7,7 @@ const HabitsTable = () => {
     []
   ); /* Use an array to acces its functions, e.g., map. So we can render the inside later */
   const [dates, setDates] = useState([]);
+  const [completionChecks, setCompletionChecks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -46,7 +47,6 @@ const HabitsTable = () => {
 
   const date = new Date();
   var dateObjToString = dates.map((date) => date["date"]);
-
   if (!dateObjToString.includes(date)) {
     dateObjToString.push(date.toDateString());
   }
@@ -55,6 +55,29 @@ const HabitsTable = () => {
   console.log("dateObjToString: ", dateObjToString);
   console.log("currentPage: ", currentPage);
 
+  const dateObjToStringLastElement =
+    dateObjToString[dateObjToString.length - 1];
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history`, {
+      method: "GET",
+      body: dateObjToStringLastElement,
+
+      headers: {
+        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+      },
+    })
+      .then((data) => data.json())
+      .then((data) => {
+        setCompletionChecks(
+          data.completion_checks
+        ); /* data is an object, {completion_checks: Array(n)} */
+      });
+  }, []);
+  const completionChecksToInt = completionChecks.map(
+    (completionCheck) => completionCheck["completion_check"]
+  );
+  console.log("completionChecksToInt", completionChecksToInt);
   return (
     <div>
       <table>
