@@ -1,4 +1,10 @@
 /* https://www.geeksforgeeks.org/reactjs/how-to-create-a-table-in-reactjs/ */
+
+/*  
+    body: JSON.stringify({ username: "example" }),
+    https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+*/
+
 import { useEffect, useState } from "react";
 import "./HabitsTable.css";
 
@@ -46,6 +52,8 @@ const HabitsTable = () => {
   const currentHabits = habits.slice(indexOfFirstHabit, indexOfLastHabit);
 
   const date = new Date();
+  const dateNoSpaces = date.toISOString().substring(0, 10);
+
   var dateObjToString = dates.map((date) => date["date"]);
   if (!dateObjToString.includes(date)) {
     dateObjToString.push(date.toDateString());
@@ -55,18 +63,18 @@ const HabitsTable = () => {
   console.log("dateObjToString: ", dateObjToString);
   console.log("currentPage: ", currentPage);
 
-  const dateObjToStringLastElement =
-    dateObjToString[dateObjToString.length - 1];
+  const dateObjToStringCurrentPage = dateObjToString[currentPage];
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history`, {
-      method: "GET",
-      body: dateObjToStringLastElement,
-
-      headers: {
-        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-      },
-    })
+    fetch(
+      `${import.meta.env.VITE_API_HOST_TEST}/habits-history/${dateNoSpaces}`,
+      {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+        },
+      }
+    )
       .then((data) => data.json())
       .then((data) => {
         setCompletionChecks(
@@ -74,10 +82,16 @@ const HabitsTable = () => {
         ); /* data is an object, {completion_checks: Array(n)} */
       });
   }, []);
+
   const completionChecksToInt = completionChecks.map(
     (completionCheck) => completionCheck["completion_check"]
   );
+
+  console.log("completionChecks", completionChecks);
   console.log("completionChecksToInt", completionChecksToInt);
+  console.log("dateNoSpaces", dateNoSpaces);
+  console.log("dateObjToStringCurrentPage", dateObjToStringCurrentPage);
+
   return (
     <div>
       <table>
