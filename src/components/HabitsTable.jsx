@@ -46,13 +46,17 @@ const HabitsTable = () => {
     setCurrentPage(page);
   };
 
-  const habitsPerPage = 10;
-  const indexOfLastHabit = currentPage * habitsPerPage;
-  const indexOfFirstHabit = indexOfLastHabit - habitsPerPage;
-  const currentHabits = habits.slice(indexOfFirstHabit, indexOfLastHabit);
+  console.log("HABITS:", habits);
+  const checksPerPage = 10;
+  const indexOfLastCheck = currentPage * checksPerPage;
+  const indexOfFirstCheck = indexOfLastCheck - checksPerPage;
+  const currentChecks = completionChecks.slice(
+    indexOfFirstCheck,
+    indexOfLastCheck
+  );
 
   const date = new Date();
-  const dateNoSpaces = date.toISOString().substring(0, 10);
+  let dateNoSpaces = date.toISOString().substring(0, 10);
 
   var dateObjToString = dates.map((date) => date["date"]);
   if (!dateObjToString.includes(date)) {
@@ -63,18 +67,13 @@ const HabitsTable = () => {
   console.log("dateObjToString: ", dateObjToString);
   console.log("currentPage: ", currentPage);
 
-  const dateObjToStringCurrentPage = dateObjToString[currentPage];
-
   useEffect(() => {
-    fetch(
-      `${import.meta.env.VITE_API_HOST_TEST}/habits-history/${dateNoSpaces}`,
-      {
-        method: "GET",
-        headers: {
-          authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-        },
-      }
-    )
+    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/2025-08-25`, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+      },
+    })
       .then((data) => data.json())
       .then((data) => {
         setCompletionChecks(
@@ -90,7 +89,6 @@ const HabitsTable = () => {
   console.log("completionChecks", completionChecks);
   console.log("completionChecksToInt", completionChecksToInt);
   console.log("dateNoSpaces", dateNoSpaces);
-  console.log("dateObjToStringCurrentPage", dateObjToStringCurrentPage);
 
   return (
     <div>
@@ -102,7 +100,7 @@ const HabitsTable = () => {
           </tr>
         </thead>
         <tbody>
-          {currentHabits.map((habit) => (
+          {habits.map((habit) => (
             <tr key={habit.id}>
               <td>{habit.habit}</td>
               <td>{habit.completed}</td>
@@ -119,12 +117,12 @@ const HabitsTable = () => {
         </button>
         <button
           onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === Math.ceil(habits.length / habitsPerPage)}
+          disabled={currentPage === Math.ceil(habits.length / checksPerPage)}
         >
           Next
         </button>
         <div>
-          Page {currentPage} of {Math.ceil(habits.length / habitsPerPage)}
+          Page {currentPage} of {Math.ceil(habits.length / checksPerPage)}
         </div>
       </div>
     </div>
