@@ -9,9 +9,7 @@ import { useEffect, useState } from "react";
 import "./HabitsTable.css";
 
 const HabitsTable = () => {
-  const [habits, setHabits] = useState(
-    []
-  ); /* Use an array to acces its functions, e.g., map. So we can render the inside later */
+  const [habits, setHabits] = useState([]); // Use an array to acces its functions, e.g., map. So we can render the inside later
   const [dates, setDates] = useState([]);
   const [completionChecks, setCompletionChecks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,7 +44,6 @@ const HabitsTable = () => {
     setCurrentPage(page);
   };
 
-  console.log("HABITS:", habits);
   const checksPerPage = 10;
   const indexOfLastCheck = currentPage * checksPerPage;
   const indexOfFirstCheck = indexOfLastCheck - checksPerPage;
@@ -63,6 +60,7 @@ const HabitsTable = () => {
     dateObjToString.push(date.toDateString());
   }
 
+  console.log("currentChecks", currentChecks);
   console.log("dates: ", dates);
   console.log("dateObjToString: ", dateObjToString);
   console.log("currentPage: ", currentPage);
@@ -103,7 +101,9 @@ const HabitsTable = () => {
           {habits.map((habit) => (
             <tr key={habit.id}>
               <td>{habit.habit}</td>
-              <td>{habit.completed}</td>
+              <td>
+                <input type="checkbox" checked />
+              </td>
             </tr>
           ))}
         </tbody>
