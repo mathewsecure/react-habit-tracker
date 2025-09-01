@@ -60,6 +60,7 @@ const HabitsTable = () => {
     dateObjToString.push(date.toDateString());
   }
 
+  console.log("habits", habits);
   console.log("currentChecks", currentChecks);
   console.log("dates: ", dates);
   console.log("dateObjToString: ", dateObjToString);
@@ -102,7 +103,7 @@ const HabitsTable = () => {
             <tr key={habit.id}>
               <td>{habit.habit}</td>
               <td>
-                <input type="checkbox" checked />
+                <input type="checkbox" id={habit.id} />
               </td>
             </tr>
           ))}
