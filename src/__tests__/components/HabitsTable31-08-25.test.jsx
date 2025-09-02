@@ -44,7 +44,7 @@ const HabitsTable310825 = () => {
     setCurrentPage(page);
   };
 
-  const checksPerPage = 10;
+  const checksPerPage = 11;
   const indexOfLastCheck = currentPage * checksPerPage;
   const indexOfFirstCheck = indexOfLastCheck - checksPerPage;
   const currentChecks = completionChecks.slice(
@@ -52,12 +52,14 @@ const HabitsTable310825 = () => {
     indexOfLastCheck
   );
 
+  console.log("current Checks", currentChecks);
+
   const date = new Date();
   let dateNoSpaces = date.toISOString().substring(0, 10);
 
   var dateObjToString = dates.map((date) => date["date"]);
   if (!dateObjToString.includes(date)) {
-    dateObjToString.push(date.toDateString());
+    dateObjToString.push(dateNoSpaces);
   }
 
   console.log("habits", habits);
@@ -81,16 +83,9 @@ const HabitsTable310825 = () => {
       });
   }, []);
 
-  const completionChecksToInt = completionChecks.map(
-    (completionCheck) => completionCheck["completion_check"]
-  );
-
   console.log("completionChecks", completionChecks);
-  console.log("completionChecksToInt", completionChecksToInt);
   console.log("dateNoSpaces", dateNoSpaces);
-  /* test */
 
-  /* test */
   return (
     <div>
       <table>
@@ -101,11 +96,12 @@ const HabitsTable310825 = () => {
           </tr>
         </thead>
         <tbody>
-          {habits.map((habit) => (
-            <tr key={habit.id}>
-              <td>{habit.habit}</td>
+          {currentChecks.map((check) => (
+            <tr key={check}>
+              <td></td>
               <td>
-                <input type="checkbox" id={habit.id} />
+                {check.completion_check}
+                <input type="checkbox" />
               </td>
             </tr>
           ))}
