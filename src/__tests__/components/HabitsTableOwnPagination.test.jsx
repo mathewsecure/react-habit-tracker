@@ -1,8 +1,3 @@
-/*  
-    body: JSON.stringify({ username: "example" }),
-    https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-*/
-
 import { useEffect, useState } from "react";
 import "../../components/HabitsTable.css";
 
@@ -14,6 +9,7 @@ const HabitsTableOwnPagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits`, {
@@ -56,13 +52,21 @@ const HabitsTableOwnPagination = () => {
       });
   }, []);
 
+  var totalPages = Math.ceil(completionChecks.length / 10);
+
   const handlePageChange = (page, start, end) => {
     setCurrentPage(page);
-    setStart(start);
     setEnd(end);
-  };
+    setStart(start);
+    console.log("PAGE", page);
+    console.log("totalpages", totalPages);
 
-  // iterate through CompletionChecks by 10 each time next or previous button is pressed
+    if (page === 1) {
+      setIsButtonDisabled(true);
+    } else {
+      setIsButtonDisabled(false);
+    }
+  };
 
   const date = new Date();
   let dateNoSpaces = date.toISOString().substring(0, 10);
@@ -108,20 +112,21 @@ const HabitsTableOwnPagination = () => {
       <div>
         <button
           onClick={() =>
-            handlePageChange(currentPage - 1, start + 10, end - 10)
+            handlePageChange(currentPage - 1, start - 10, end - 10)
           }
+          disabled={isButtonDisabled}
         >
           Previous
         </button>
         <button
           onClick={() =>
-            handlePageChange(currentPage + 1, start + 10, end - 10)
+            handlePageChange(currentPage + 1, start + 10, end + 10)
           }
         >
           Next
         </button>
         <div>
-          Page {currentPage} of {}
+          Page {currentPage} of {totalPages}
         </div>
       </div>
     </div>
