@@ -60,7 +60,9 @@ const HabitsTableOwnPagination = () => {
     setStart(start);
     console.log("PAGE", page);
     console.log("totalpages", totalPages);
-
+    if (page === totalPages) {
+      setIsButtonDisabled(true);
+    }
     if (page === 1) {
       setIsButtonDisabled(true);
     } else {
@@ -122,6 +124,7 @@ const HabitsTableOwnPagination = () => {
           onClick={() =>
             handlePageChange(currentPage + 1, start + 10, end + 10)
           }
+          disabled={isButtonDisabled}
         >
           Next
         </button>
