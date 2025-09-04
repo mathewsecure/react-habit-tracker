@@ -60,11 +60,10 @@ const HabitsTable = () => {
     setEnd(end);
     setStart(start);
 
-    console.log("PAGE", page);
-    console.log("totalpages", totalPages);
-
     if (page === totalPages) {
       setIsNextButtonDisabled(true);
+    } else {
+      setIsNextButtonDisabled(false);
     }
     if (page === 1) {
       setIsPrevButtonDisabled(true);
@@ -89,9 +88,6 @@ const HabitsTable = () => {
 
   console.log("dateObjToString: ", dateObjToString);
   console.log("dateNoSpaces", dateNoSpaces);
-
-  console.log("start", start);
-  console.log("end", end);
 
   return (
     <div>
