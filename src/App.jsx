@@ -6,7 +6,6 @@ import HabitsTable2 from "./__tests__/components/HabitsTable2.test";
 function App() {
   return (
     <>
-      <h3>Daily habit tracker</h3>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
