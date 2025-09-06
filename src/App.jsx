@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HabitsTable from "./components/HabitsTable";
 import Layout from "./components/Layout";
-import HabitsTableTests from "./__tests__/components/HabitsTable3.test";
+import HabitsTable2 from "./__tests__/components/HabitsTable2.test";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route path="HabitsTable" element={<HabitsTable />} />
-            <Route path="HabitsTableTests" element={<HabitsTableTests />} />
+            <Route path="HabitsTable2" element={<HabitsTable2 />} />
           </Route>
         </Routes>
       </BrowserRouter>

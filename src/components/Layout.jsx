@@ -6,7 +6,7 @@ const Layout = () => {
       <nav>
         <Link to="/">home</Link>
         <Link to="/HabitsTable">HabitsTable</Link>
-        <Link to="/HabitsTableTests">HabitsTableTests</Link>
+        <Link to="/HabitsTable2">HabitsTable2</Link>
       </nav>
       <section>
         <Outlet />

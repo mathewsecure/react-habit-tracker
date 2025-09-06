@@ -1,7 +1,7 @@
 /* https://www.geeksforgeeks.org/reactjs/how-to-create-a-table-in-reactjs/ */
 import { useEffect, useState } from "react";
 import "./HabitsTable.css";
-const HabitsTable = () => {
+const HabitsTable0 = () => {
   const [habits, setHabits] = useState(
     []
   ); /* Use an array to acces its functions, e.g., map. So we can render the inside later */
@@ -60,4 +60,4 @@ const HabitsTable = () => {
   );
 };
 
-export default HabitsTable;
+export default HabitsTable0;

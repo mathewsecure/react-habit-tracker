@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import "../../components/HabitsTable.css";
 
-const HabitsTable310825 = () => {
+const HabitsTable1 = () => {
   const [habits, setHabits] = useState([]); // Use an array to acces its functions, e.g., map. So we can render the inside later
   const [dates, setDates] = useState([]);
   const [completionChecks, setCompletionChecks] = useState([]);
@@ -128,4 +128,4 @@ const HabitsTable310825 = () => {
   );
 };
 
-export default HabitsTable310825;
+export default HabitsTable1;
