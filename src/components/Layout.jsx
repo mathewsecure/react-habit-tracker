@@ -1,10 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 const Layout = () => {
   return (
-    <nav>
-      <Link to="/">home</Link>
-    </nav>
+    <main>
+      <nav>
+        <Link to="/">home</Link>
+        <Link to="/HabitsTable">HabitsTable</Link>
+      </nav>
+      <section>
+        <Outlet />
+      </section>
+    </main>
   );
 };
 
