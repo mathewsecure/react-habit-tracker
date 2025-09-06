@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "../../components/HabitsTable.css";
 
-const HabitsTableOwnPagination = () => {
+const HabitsTableTests = () => {
   const [habits, setHabits] = useState([]); // Use an array to acces its functions, e.g., map. So we can render the inside later
   const [dates, setDates] = useState([]);
   const [completionChecks, setCompletionChecks] = useState([]);
@@ -9,7 +9,8 @@ const HabitsTableOwnPagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits`, {
@@ -58,15 +59,16 @@ const HabitsTableOwnPagination = () => {
     setCurrentPage(page);
     setEnd(end);
     setStart(start);
-    console.log("PAGE", page);
-    console.log("totalpages", totalPages);
+
     if (page === totalPages) {
-      setIsButtonDisabled(true);
+      setIsNextButtonDisabled(true);
+    } else {
+      setIsNextButtonDisabled(false);
     }
     if (page === 1) {
-      setIsButtonDisabled(true);
+      setIsPrevButtonDisabled(true);
     } else {
-      setIsButtonDisabled(false);
+      setIsPrevButtonDisabled(false);
     }
   };
 
@@ -86,9 +88,6 @@ const HabitsTableOwnPagination = () => {
 
   console.log("dateObjToString: ", dateObjToString);
   console.log("dateNoSpaces", dateNoSpaces);
-
-  console.log("start", start);
-  console.log("end", end);
 
   return (
     <div>
@@ -116,7 +115,7 @@ const HabitsTableOwnPagination = () => {
           onClick={() =>
             handlePageChange(currentPage - 1, start - 10, end - 10)
           }
-          disabled={isButtonDisabled}
+          disabled={isPrevButtonDisabled}
         >
           Previous
         </button>
@@ -124,7 +123,7 @@ const HabitsTableOwnPagination = () => {
           onClick={() =>
             handlePageChange(currentPage + 1, start + 10, end + 10)
           }
-          disabled={isButtonDisabled}
+          disabled={isNextButtonDisabled}
         >
           Next
         </button>
@@ -136,4 +135,4 @@ const HabitsTableOwnPagination = () => {
   );
 };
 
-export default HabitsTableOwnPagination;
+export default HabitsTableTests;
