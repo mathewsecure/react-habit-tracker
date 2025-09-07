@@ -1,3 +1,10 @@
+/**
+ *
+ * updater function
+ * https://react.dev/learn/queueing-a-series-of-state-updates#what-happens-if-you-update-state-after-replacing-it
+ *
+ */
+
 import { useEffect, useState } from "react";
 import "../../components/HabitsTable.css";
 
@@ -11,6 +18,11 @@ const HabitsTable2 = () => {
   const [end, setEnd] = useState(10);
   const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
+
+  const date = new Date();
+  let dateNoSpaces = date.toISOString().substring(0, 10);
+  var dateObjToString = dates.map((date) => date["date"]);
+  var totalPages = Math.ceil(completionChecks.length / 10);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits`, {
@@ -53,9 +65,7 @@ const HabitsTable2 = () => {
       });
   }, []);
 
-  var totalPages = Math.ceil(completionChecks.length / 10);
-
-  const handlePageChange = (page, start, end) => {
+  function handlePageChange(page, start, end) {
     setCurrentPage(page);
     setEnd(end);
     setStart(start);
@@ -70,22 +80,24 @@ const HabitsTable2 = () => {
     } else {
       setIsPrevButtonDisabled(false);
     }
-  };
+  }
 
-  const date = new Date();
-  let dateNoSpaces = date.toISOString().substring(0, 10);
-
-  var dateObjToString = dates.map((date) => date["date"]);
   if (!dateObjToString.includes(date)) {
     dateObjToString.push(dateNoSpaces);
+  }
+
+  function toggleCheck(id) {
+    setCompletionChecks((prev) =>
+      prev.map((c) =>
+        c.id === id ? { ...c, completion_check: c.completion_check ? 0 : 1 } : c
+      )
+    );
   }
 
   console.log("[fetch] habits", habits);
   console.log("[fetch] dates: ", dates);
   console.log("[fetch] completionChecks", completionChecks);
-
   console.log("currentPage: ", currentPage);
-
   console.log("dateObjToString: ", dateObjToString);
   console.log("dateNoSpaces", dateNoSpaces);
 
@@ -100,11 +112,15 @@ const HabitsTable2 = () => {
         </thead>
         <tbody>
           {completionChecks.slice(start, end).map((check) => (
-            <tr key={check}>
-              <td></td>
+            <tr key={check.id}>
+              <td>Habit Name</td>
               <td>
                 {check.completion_check}
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={!!check.completion_check}
+                  onChange={() => toggleCheck(check.id)}
+                />
               </td>
             </tr>
           ))}
