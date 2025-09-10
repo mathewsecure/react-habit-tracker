@@ -88,8 +88,10 @@ const HabitsTable2 = () => {
 
   function toggleCheck(id) {
     setCompletionChecks((prev) =>
-      prev.map((c) =>
-        c.id === id ? { ...c, completion_check: c.completion_check ? 0 : 1 } : c
+      prev.map((check) =>
+        check.id === id
+          ? { ...check, completion_check: check.completion_check ? 0 : 1 }
+          : check
       )
     );
   }
