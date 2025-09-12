@@ -1,6 +1,6 @@
 /**
  *
- * updater function
+ * updater function (pass a function not the result of calling it)
  * https://react.dev/learn/queueing-a-series-of-state-updates#what-happens-if-you-update-state-after-replacing-it
  *
  */
@@ -87,10 +87,13 @@ const HabitsTable2 = () => {
   }
 
   function toggleCheck(id) {
-    setCompletionChecks((prev) =>
-      prev.map((check) =>
+    setCompletionChecks((prevChecks) =>
+      prevChecks.map((check) =>
         check.id === id
-          ? { ...check, completion_check: check.completion_check ? 0 : 1 }
+          ? {
+              ...check,
+              completion_check: check.completion_check ? 0 : 1,
+            }
           : check
       )
     );
