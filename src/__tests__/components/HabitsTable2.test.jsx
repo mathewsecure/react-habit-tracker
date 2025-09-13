@@ -91,7 +91,6 @@ const HabitsTable2 = () => {
       prevChecks.map((check) =>
         check.id === id
           ? {
-              ...check,
               completion_check: check.completion_check ? 0 : 1,
             }
           : check
