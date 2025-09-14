@@ -86,6 +86,7 @@ const HabitsTable2 = () => {
     dateObjToString.push(dateNoSpaces);
   }
 
+  //todo: understand this
   function toggleCheck(id) {
     setCompletionChecks((prevChecks) =>
       prevChecks.map((check) =>
