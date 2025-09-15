@@ -2,6 +2,7 @@ import { Link, Outlet } from "react-router-dom";
 import "./Layout.css";
 
 const Layout = () => {
+  //todo: update section css when done
   return (
     <main>
       <nav>
