@@ -106,6 +106,10 @@ const HabitsTable2 = () => {
   console.log("dateObjToString: ", dateObjToString);
   console.log("dateNoSpaces", dateNoSpaces);
 
+  // test
+  const completionChecks_habits = completionChecks.concat(habits);
+  console.log("completionChecks_habits", completionChecks_habits);
+
   return (
     <div>
       <table>
