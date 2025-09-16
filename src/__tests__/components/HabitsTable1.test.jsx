@@ -1,18 +1,28 @@
-/* https://www.geeksforgeeks.org/reactjs/how-to-create-a-table-in-reactjs/ */
-
-/*  
-    body: JSON.stringify({ username: "example" }),
-    https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-*/
+/**
+ *
+ * updater function (pass a function not the result of calling it)
+ * https://react.dev/learn/queueing-a-series-of-state-updates#what-happens-if-you-update-state-after-replacing-it
+ *
+ */
 
 import { useEffect, useState } from "react";
 import "../../components/HabitsTable.css";
 
-const HabitsTable1 = () => {
+const HabitsTable2 = () => {
   const [habits, setHabits] = useState([]); // Use an array to acces its functions, e.g., map. So we can render the inside later
   const [dates, setDates] = useState([]);
   const [completionChecks, setCompletionChecks] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
+  const [start, setStart] = useState(0);
+  const [end, setEnd] = useState(10);
+  const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
+
+  const date = new Date();
+  let dateNoSpaces = date.toISOString().substring(0, 10);
+  var dateObjToString = dates.map((date) => date["date"]);
+  var totalPages = Math.ceil(completionChecks.length / 10);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits`, {
@@ -40,36 +50,8 @@ const HabitsTable1 = () => {
       });
   }, []);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const checksPerPage = 11;
-  const indexOfLastCheck = currentPage * checksPerPage;
-  const indexOfFirstCheck = indexOfLastCheck - checksPerPage;
-  const currentChecks = completionChecks.slice(
-    indexOfFirstCheck,
-    indexOfLastCheck
-  );
-
-  console.log("current Checks", currentChecks);
-
-  const date = new Date();
-  let dateNoSpaces = date.toISOString().substring(0, 10);
-
-  var dateObjToString = dates.map((date) => date["date"]);
-  if (!dateObjToString.includes(date)) {
-    dateObjToString.push(dateNoSpaces);
-  }
-
-  console.log("habits", habits);
-  console.log("currentChecks", currentChecks);
-  console.log("dates: ", dates);
-  console.log("dateObjToString: ", dateObjToString);
-  console.log("currentPage: ", currentPage);
-
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/2025-08-25`, {
+    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history`, {
       method: "GET",
       headers: {
         authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
@@ -83,8 +65,50 @@ const HabitsTable1 = () => {
       });
   }, []);
 
-  console.log("completionChecks", completionChecks);
+  function handlePageChange(page, start, end) {
+    setCurrentPage(page);
+    setEnd(end);
+    setStart(start);
+
+    if (page === totalPages) {
+      setIsNextButtonDisabled(true);
+    } else {
+      setIsNextButtonDisabled(false);
+    }
+    if (page === 1) {
+      setIsPrevButtonDisabled(true);
+    } else {
+      setIsPrevButtonDisabled(false);
+    }
+  }
+
+  if (!dateObjToString.includes(date)) {
+    dateObjToString.push(dateNoSpaces);
+  }
+
+  //todo: understand this
+  function toggleCheck(id) {
+    setCompletionChecks((prevChecks) =>
+      prevChecks.map((check) =>
+        check.id === id
+          ? {
+              completion_check: check.completion_check ? 0 : 1,
+            }
+          : check
+      )
+    );
+  }
+
+  console.log("[fetch] habits", habits);
+  console.log("[fetch] dates: ", dates);
+  console.log("[fetch] completionChecks", completionChecks);
+  console.log("currentPage: ", currentPage);
+  console.log("dateObjToString: ", dateObjToString);
   console.log("dateNoSpaces", dateNoSpaces);
+
+  // test
+  const completionChecks_habits = completionChecks.concat(habits);
+  console.log("completionChecks_habits", completionChecks_habits);
 
   return (
     <div>
@@ -96,12 +120,16 @@ const HabitsTable1 = () => {
           </tr>
         </thead>
         <tbody>
-          {currentChecks.map((check) => (
-            <tr key={check}>
-              <td></td>
+          {completionChecks.slice(start, end).map((check) => (
+            <tr key={check.id}>
+              <td>Habit Name</td>
               <td>
                 {check.completion_check}
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={!!check.completion_check}
+                  onChange={() => toggleCheck(check.id)}
+                />
               </td>
             </tr>
           ))}
@@ -109,23 +137,27 @@ const HabitsTable1 = () => {
       </table>
       <div>
         <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
+          onClick={() =>
+            handlePageChange(currentPage - 1, start - 10, end - 10)
+          }
+          disabled={isPrevButtonDisabled}
         >
           Previous
         </button>
         <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === Math.ceil(habits.length / checksPerPage)}
+          onClick={() =>
+            handlePageChange(currentPage + 1, start + 10, end + 10)
+          }
+          disabled={isNextButtonDisabled}
         >
           Next
         </button>
         <div>
-          Page {currentPage} of {Math.ceil(habits.length / checksPerPage)}
+          Page {currentPage} of {totalPages}
         </div>
       </div>
     </div>
   );
 };
 
-export default HabitsTable1;
+export default HabitsTable2;
