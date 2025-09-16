@@ -106,10 +106,7 @@ const HabitsTable2 = () => {
   console.log("dateObjToString: ", dateObjToString);
   console.log("dateNoSpaces", dateNoSpaces);
 
-  // test
-  const completionChecks_habits = completionChecks.concat(habits);
-  console.log("completionChecks_habits", completionChecks_habits);
-
+  var i = 0; //iterate through each habit name
   return (
     <div>
       <table>
@@ -122,7 +119,8 @@ const HabitsTable2 = () => {
         <tbody>
           {completionChecks.slice(start, end).map((check) => (
             <tr key={check.id}>
-              <td>Habit Name</td>
+              <td>{habits[i].habit}</td>
+              {i++}
               <td>
                 {check.completion_check}
                 <input
