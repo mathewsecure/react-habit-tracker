@@ -119,8 +119,7 @@ const HabitsTable2 = () => {
         <tbody>
           {completionChecks.slice(start, end).map((check) => (
             <tr key={check.id}>
-              <td>{habits[i].habit}</td>
-              {i++}
+              <td>{habits[check.id].habit}</td>
               <td>
                 {check.completion_check}
                 <input
