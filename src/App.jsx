@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HabitsTable from "./components/HabitsTable";
 import Layout from "./components/Layout";
-import HabitsTable2 from "./__tests__/components/HabitsTable2.test";
+import HabitsTable2 from "./__tests__/components/HabitsTable1.test";
 
 function App() {
   return (
