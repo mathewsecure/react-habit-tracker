@@ -23,6 +23,7 @@ const HabitsTable2 = () => {
   let dateNoSpaces = date.toISOString().substring(0, 10);
   var dateObjToString = dates.map((date) => date["date"]);
   var totalPages = Math.ceil(completionChecks.length / 10);
+  const habitsPerPage = 10;
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits`, {
@@ -106,7 +107,6 @@ const HabitsTable2 = () => {
   console.log("dateObjToString: ", dateObjToString);
   console.log("dateNoSpaces", dateNoSpaces);
 
-  var i = 0; //iterate through each habit name
   return (
     <div>
       <table>
@@ -117,25 +117,36 @@ const HabitsTable2 = () => {
           </tr>
         </thead>
         <tbody>
-          {completionChecks.slice(start, end).map((check) => (
-            <tr key={check.id}>
-              <td>{habits[check.id].habit}</td>
-              <td>
-                {check.completion_check}
-                <input
-                  type="checkbox"
-                  checked={!!check.completion_check}
-                  onChange={() => toggleCheck(check.id)}
-                />
-              </td>
-            </tr>
-          ))}
+          {completionChecks.slice(start, end).map((check) => {
+            // todo: need to update selectAllCompletionChecks endpoint to get habit_id in desc order
+            const habitEqualsCheck = habits.find(
+              (habit) => habit.id == check.habit_id
+            ); // store name of habit, to later show it
+            console.log("habitEqualsCheck", habitEqualsCheck);
+            return (
+              <tr key={check.id}>
+                <td>{habitEqualsCheck.habit}</td>
+                <td>
+                  {check.completion_check}
+                  <input
+                    type="checkbox"
+                    checked={!!check.completion_check}
+                    onChange={() => toggleCheck(check.id)}
+                  />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       <div>
         <button
           onClick={() =>
-            handlePageChange(currentPage - 1, start - 10, end - 10)
+            handlePageChange(
+              currentPage - 1,
+              start - habitsPerPage,
+              end - habitsPerPage
+            )
           }
           disabled={isPrevButtonDisabled}
         >
@@ -143,7 +154,11 @@ const HabitsTable2 = () => {
         </button>
         <button
           onClick={() =>
-            handlePageChange(currentPage + 1, start + 10, end + 10)
+            handlePageChange(
+              currentPage + 1,
+              start + habitsPerPage,
+              end + habitsPerPage
+            )
           }
           disabled={isNextButtonDisabled}
         >
