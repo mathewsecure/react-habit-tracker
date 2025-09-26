@@ -89,15 +89,12 @@ const HabitsTable2 = () => {
 
   //todo: understand this
   function toggleCheck(id) {
-    setCompletionChecks((prevChecks) =>
-      prevChecks.map((check) =>
-        check.id === id
-          ? {
-              completion_check: check.completion_check ? 0 : 1,
-            }
-          : check
-      )
-    );
+    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/${id}`, {
+      method: "PUT",
+      headers: {
+        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+      },
+    });
   }
 
   console.log("[fetch] habits", habits);
