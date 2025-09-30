@@ -83,17 +83,22 @@ const HabitsTable2 = () => {
     }
   }
 
+  //todo: add endpoint
   if (!dateObjToString.includes(date)) {
     dateObjToString.push(dateNoSpaces);
   }
+  const lastOfDatesArray = dateObjToString[dateObjToString.length - 1];
 
-  //todo: understand this
-  function toggleCheck(id) {
+  function toggleCheck(inputId, inputDate) {
+    console.log("toggleCheck: reload the page to see changes");
+    console.log("---inputdate", inputDate);
+    console.log("id", id);
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/${id}`, {
       method: "PUT",
       headers: {
         authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
       },
+      body: JSON.stringify({ id: inputId, date: inputDate }),
     });
   }
 
@@ -119,7 +124,6 @@ const HabitsTable2 = () => {
             const habitEqualsCheck = habits.find(
               (habit) => habit.id == check.habit_id
             ); // store name of habit, to later show it
-            console.log("habitEqualsCheck", habitEqualsCheck);
             return (
               <tr key={check.id}>
                 <td>{habitEqualsCheck.habit}</td>
@@ -128,7 +132,7 @@ const HabitsTable2 = () => {
                   <input
                     type="checkbox"
                     checked={!!check.completion_check}
-                    onChange={() => toggleCheck(check.id)}
+                    onChange={() => toggleCheck(check.id, "2025-09-24")}
                   />
                 </td>
               </tr>
