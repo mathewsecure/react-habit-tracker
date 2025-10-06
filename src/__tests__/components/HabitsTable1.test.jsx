@@ -90,12 +90,10 @@ const HabitsTable2 = () => {
   const lastOfDatesArray = dateObjToString[dateObjToString.length - 1];
 
   function toggleCheck(inputId, inputDate) {
-    console.log("toggleCheck: reload the page to see changes");
-    console.log("---inputdate", inputDate);
-    console.log("id", id);
-    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/${id}`, {
+    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
       method: "PUT",
       headers: {
+        "Content-Type": "application/json",
         authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
       },
       body: JSON.stringify({ id: inputId, date: inputDate }),
