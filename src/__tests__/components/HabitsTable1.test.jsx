@@ -19,12 +19,6 @@ const HabitsTable2 = () => {
   const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
 
-  const date = new Date();
-  let dateNoSpaces = date.toISOString().substring(0, 10);
-  var dateObjToString = dates.map((date) => date["date"]);
-  var totalPages = Math.ceil(completionChecks.length / 10);
-  const habitsPerPage = 10;
-
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits`, {
       method: "GET",
@@ -66,6 +60,18 @@ const HabitsTable2 = () => {
       });
   }, []);
 
+  const date = new Date();
+  let dateToISOString = date.toISOString().substring(0, 10); //fix use user timezone for that 1 day
+  var dateObjToString = dates.map((date) => date["date"]);
+
+  var totalPages = Math.ceil(completionChecks.length / 10);
+  const habitsPerPage = 10;
+
+  //todo: add endpoint
+  if (!dateObjToString.includes(dateToISOString)) {
+    dateObjToString.push(dateToISOString);
+  }
+
   function handlePageChange(page, start, end) {
     setCurrentPage(page);
     setEnd(end);
@@ -83,12 +89,6 @@ const HabitsTable2 = () => {
     }
   }
 
-  //todo: add endpoint
-  if (!dateObjToString.includes(date)) {
-    dateObjToString.push(dateNoSpaces);
-  }
-  const lastOfDatesArray = dateObjToString[dateObjToString.length - 1];
-
   function toggleCheck(inputId, inputDate) {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
       method: "PUT",
@@ -105,7 +105,7 @@ const HabitsTable2 = () => {
   console.log("[fetch] completionChecks", completionChecks);
   console.log("currentPage: ", currentPage);
   console.log("dateObjToString: ", dateObjToString);
-  console.log("dateNoSpaces", dateNoSpaces);
+  console.log("dateToISOString", dateToISOString);
 
   return (
     <div>
@@ -130,7 +130,9 @@ const HabitsTable2 = () => {
                   <input
                     type="checkbox"
                     checked={!!check.completion_check}
-                    onChange={() => toggleCheck(check.id, "2025-09-24")}
+                    onChange={() =>
+                      toggleCheck(check.id, dateObjToString[currentPage - 1])
+                    }
                   />
                 </td>
               </tr>
