@@ -67,26 +67,28 @@ const HabitsTable2 = () => {
   var totalPages = Math.ceil(completionChecks.length / 10);
   const habitsPerPage = 10;
 
-  if (!dateObjToString.includes(dateToISOString)) {
-    dateObjToString.push(dateToISOString);
-    /*     //endpoint:insertdate
-    //todo:fix only add one date at a time (also for the fetch below)
-    fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${dateToISOString}`, {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-      },
-    });
-    //endpoint:insertCompletionChecks
-    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-      },
-      body: JSON.stringify({ date: dateToISOString }),
-    }); */
-  }
+  useEffect(() => {
+    if (!dateObjToString.includes(dateToISOString)) {
+      dateObjToString.push(dateToISOString);
+      //endpoint:insertdate
+      //todo:fix only add one date at a time (also for the fetch below)
+      fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${dateToISOString}`, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+        },
+      });
+      //endpoint:insertCompletionChecks
+      fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+        },
+        body: JSON.stringify({ date: dateToISOString }),
+      });
+    }
+  }, []);
 
   function handlePageChange(page, start, end) {
     setCurrentPage(page);
