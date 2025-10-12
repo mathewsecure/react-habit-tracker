@@ -19,6 +19,8 @@ const HabitsTable2 = () => {
   const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
 
+  const [date, setDate] = useState("");
+
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits`, {
       method: "GET",
@@ -60,34 +62,47 @@ const HabitsTable2 = () => {
       });
   }, []);
 
-  const date = new Date();
-  let dateToISOString = date.toISOString().substring(0, 10); //fix use user timezone for that 1 day
-  var dateObjToString = dates.map((date) => date["date"]);
+  useEffect(() => {
+    const date = new Date();
+    let dateToISOString = date.toISOString().substring(0, 10); //fix use user timezone for that 1 day
+    setDate(dateToISOString);
+  }, []);
+  var dateObjToString = dates.map((date) => date["date"]); //todo: change everything that uses dateObjToString into dates state
 
   var totalPages = Math.ceil(completionChecks.length / 10);
   const habitsPerPage = 10;
 
-  //todo:fix only add one date at a time (also for the fetch below) (use useState)
-
-  if (!dateObjToString.includes(dateToISOString)) {
-    dateObjToString.push(dateToISOString);
-    //endpoint:insertdate
-    fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${dateToISOString}`, {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-      },
-    });
-    //endpoint:insertCompletionChecks
-    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-      },
-      body: JSON.stringify({ date: dateToISOString }),
-    });
+  function datesIterationTest(dates) {
+    for (var i = 0; i < dates.length; i++) {
+      console.log(dates[i].date);
+      console.log(dates[i]);
+    }
   }
+  datesIterationTest(dates);
+
+  //todo: fix only add one date at a time (also for the fetch below) (use useState)
+  useEffect(() => {
+    if (!dates.some((date) => date.date === date)) {
+      //setDates(date); todo: fix error when uncommenting this line
+      dates.push(date);
+      //endpoint:insertdate
+      fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${date}`, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+        },
+      });
+      //endpoint:insertCompletionChecks
+      fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+        },
+        body: JSON.stringify({ date: date }),
+      });
+    }
+  }, []);
 
   function handlePageChange(page, start, end) {
     setCurrentPage(page);
@@ -122,7 +137,7 @@ const HabitsTable2 = () => {
   console.log("[fetch] completionChecks", completionChecks);
   console.log("currentPage: ", currentPage);
   console.log("dateObjToString: ", dateObjToString);
-  console.log("dateToISOString", dateToISOString);
+  console.log("dateToISOString", date);
 
   return (
     <div>
