@@ -63,35 +63,36 @@ const HabitsTable2 = () => {
   }, []);
 
   useEffect(() => {
-    const date = new Date();
-    let dateToISOString = date.toISOString().substring(0, 10); //fix use user timezone for that 1 day
+    const newDate = new Date();
+    let dateToISOString = newDate.toISOString().substring(0, 10); //fix use user timezone for that 1 day
     setDate(dateToISOString);
-  }, []);
+  }, [dates]);
+
   var dateObjToString = dates.map((date) => date["date"]); //todo: change everything that uses dateObjToString into dates state
 
   var totalPages = Math.ceil(completionChecks.length / 10);
   const habitsPerPage = 10;
 
-  function datesIterationTest(dates) {
+  /*   function datesIterationTest(dates) {
     for (var i = 0; i < dates.length; i++) {
       console.log(dates[i].date);
       console.log(dates[i]);
     }
   }
-  datesIterationTest(dates);
+  datesIterationTest(dates); */
 
   //todo: fix only add one date at a time (also for the fetch below) (use useState)
   useEffect(() => {
     if (!dates.some((date) => date.date === date)) {
-      setDates([...dates, date]); //todo: fix error when uncommenting this line: https://react.dev/learn/updating-arrays-in-state
-      //endpoint:insertdate
+      setDates([...dates, date]); // https://react.dev/learn/updating-arrays-in-state
+
       fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${date}`, {
         method: "POST",
         headers: {
           authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
         },
       });
-      //endpoint:insertCompletionChecks
+
       fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
         method: "POST",
         headers: {
