@@ -73,14 +73,6 @@ const HabitsTable2 = () => {
   var totalPages = Math.ceil(completionChecks.length / 10);
   const habitsPerPage = 10;
 
-  /*   function datesIterationTest(dates) {
-    for (var i = 0; i < dates.length; i++) {
-      console.log(dates[i].date);
-      console.log(dates[i]);
-    }
-  }
-  datesIterationTest(dates); */
-
   //todo: fix only add one date at a time (also for the fetch below) (use useState)
   useEffect(() => {
     if (!dates.some((date) => date.date === date)) {
