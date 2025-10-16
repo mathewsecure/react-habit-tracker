@@ -19,7 +19,7 @@ const HabitsTable2 = () => {
   const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
 
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState({});
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits`, {
@@ -63,10 +63,11 @@ const HabitsTable2 = () => {
   }, []);
 
   useEffect(() => {
+    //todo: add an object with a property date (to be able to then add it to dates state)
     const newDate = new Date();
     let dateToISOString = newDate.toISOString().substring(0, 10); //fix use user timezone for that 1 day
     setDate(dateToISOString);
-  }, [dates]);
+  }, []);
 
   var dateObjToString = dates.map((date) => date["date"]); //todo: change everything that uses dateObjToString into dates state
 
@@ -75,7 +76,7 @@ const HabitsTable2 = () => {
 
   //todo: fix only add one date at a time (also for the fetch below) (use useState)
   useEffect(() => {
-    if (!dates.some((date) => date.date === date)) {
+    if (!dates.some((object) => object.date === date)) {
       setDates([...dates, date]); // https://react.dev/learn/updating-arrays-in-state
 
       fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${date}`, {
@@ -94,7 +95,7 @@ const HabitsTable2 = () => {
         body: JSON.stringify({ date: date }),
       });
     }
-  }, []);
+  }, [date]);
 
   function handlePageChange(page, start, end) {
     setCurrentPage(page);
