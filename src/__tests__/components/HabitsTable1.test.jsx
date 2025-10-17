@@ -19,7 +19,7 @@ const HabitsTable2 = () => {
   const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
 
-  const [date, setDate] = useState({});
+  const [date, setDate] = useState({ date: "" });
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits`, {
@@ -66,7 +66,8 @@ const HabitsTable2 = () => {
     //todo: add an object with a property date (to be able to then add it to dates state)
     const newDate = new Date();
     let dateToISOString = newDate.toISOString().substring(0, 10); //fix use user timezone for that 1 day
-    setDate(dateToISOString);
+    setDate({ date: dateToISOString });
+    console.log("date state", date.date);
   }, []);
 
   var dateObjToString = dates.map((date) => date["date"]); //todo: change everything that uses dateObjToString into dates state
@@ -76,9 +77,8 @@ const HabitsTable2 = () => {
 
   //todo: fix only add one date at a time (also for the fetch below) (use useState)
   useEffect(() => {
-    if (!dates.some((object) => object.date === date)) {
-      setDates([...dates, date]); // https://react.dev/learn/updating-arrays-in-state
-
+    if (!dates.some((object) => object.date === date.date)) {
+      setDates([...dates, date.date]); // https://react.dev/learn/updating-arrays-in-state
       fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${date}`, {
         method: "POST",
         headers: {
