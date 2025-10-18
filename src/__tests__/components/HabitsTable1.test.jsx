@@ -78,8 +78,8 @@ const HabitsTable2 = () => {
   //todo: fix only add one date at a time (also for the fetch below) (use useState)
   useEffect(() => {
     if (!dates.some((object) => object.date === date.date)) {
-      setDates([...dates, date.date]); // https://react.dev/learn/updating-arrays-in-state
-      fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${date}`, {
+      setDates([...dates, { date: date.date }]); // https://react.dev/learn/updating-arrays-in-state
+      fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${date.date}`, {
         method: "POST",
         headers: {
           authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
@@ -92,7 +92,7 @@ const HabitsTable2 = () => {
           "Content-Type": "application/json",
           authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
         },
-        body: JSON.stringify({ date: date }),
+        body: JSON.stringify({ date: date.date }),
       });
     }
   }, [date]);
