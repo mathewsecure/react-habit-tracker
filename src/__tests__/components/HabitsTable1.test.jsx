@@ -9,16 +9,19 @@ import { useEffect, useState } from "react";
 import "../../components/HabitsTable.css";
 
 const HabitsTable2 = () => {
+  // API call states
   const [habits, setHabits] = useState([]); // Use an array to acces its functions, e.g., map. So we can render the inside later
   const [dates, setDates] = useState([]);
   const [completionChecks, setCompletionChecks] = useState([]);
 
+  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
   const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
 
+  // Todays date state
   const [date, setDate] = useState({ date: "" });
 
   useEffect(() => {
