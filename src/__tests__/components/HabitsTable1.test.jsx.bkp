@@ -9,15 +9,20 @@ import { useEffect, useState } from "react";
 import "../../components/HabitsTable.css";
 
 const HabitsTable2 = () => {
+  // API call states
   const [habits, setHabits] = useState([]); // Use an array to acces its functions, e.g., map. So we can render the inside later
   const [dates, setDates] = useState([]);
   const [completionChecks, setCompletionChecks] = useState([]);
 
+  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
   const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
+
+  // Todays date state
+  const [date, setDate] = useState({ date: "" });
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits`, {
@@ -60,34 +65,40 @@ const HabitsTable2 = () => {
       });
   }, []);
 
-  const date = new Date();
-  let dateToISOString = date.toISOString().substring(0, 10); //fix use user timezone for that 1 day
-  var dateObjToString = dates.map((date) => date["date"]);
+  useEffect(() => {
+    //todo: add an object with a property date (to be able to then add it to dates state)
+    const newDate = new Date();
+    let dateToISOString = newDate.toISOString().substring(0, 10); //fix use user timezone for that 1 day
+    setDate({ date: dateToISOString });
+    console.log("date state", date.date);
+  }, []);
+
+  var dateObjToString = dates.map((date) => date["date"]); //todo: change everything that uses dateObjToString into dates state
 
   var totalPages = Math.ceil(completionChecks.length / 10);
   const habitsPerPage = 10;
 
-  //todo:fix only add one date at a time (also for the fetch below) (use useState)
+  //todo: fix only add one date at a time (also for the fetch below) (use useState)
+  useEffect(() => {
+    if (!dates.some((object) => object.date === date.date)) {
+      setDates((prev) => [...dates, { date: date.date }]); // https://react.dev/learn/updating-arrays-in-state
+      fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${date.date}`, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+        },
+      });
 
-  if (!dateObjToString.includes(dateToISOString)) {
-    dateObjToString.push(dateToISOString);
-    //endpoint:insertdate
-    fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${dateToISOString}`, {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-      },
-    });
-    //endpoint:insertCompletionChecks
-    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-      },
-      body: JSON.stringify({ date: dateToISOString }),
-    });
-  }
+      fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+        },
+        body: JSON.stringify({ date: date.date }),
+      });
+    }
+  }, [date]);
 
   function handlePageChange(page, start, end) {
     setCurrentPage(page);
@@ -122,7 +133,7 @@ const HabitsTable2 = () => {
   console.log("[fetch] completionChecks", completionChecks);
   console.log("currentPage: ", currentPage);
   console.log("dateObjToString: ", dateObjToString);
-  console.log("dateToISOString", dateToISOString);
+  console.log("dateToISOString", date);
 
   return (
     <div>

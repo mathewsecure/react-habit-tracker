@@ -81,7 +81,7 @@ const HabitsTable2 = () => {
   //todo: fix only add one date at a time (also for the fetch below) (use useState)
   useEffect(() => {
     if (!dates.some((object) => object.date === date.date)) {
-      setDates([...dates, { date: date.date }]); // https://react.dev/learn/updating-arrays-in-state
+      setDates((prev) => [...dates, { date: date.date }]); // https://react.dev/learn/updating-arrays-in-state
       fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${date.date}`, {
         method: "POST",
         headers: {
