@@ -5,7 +5,7 @@
  *
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../../components/HabitsTable.css";
 
 const HabitsTable2 = () => {
@@ -72,28 +72,44 @@ const HabitsTable2 = () => {
       console.error("Error at updating check", error);
     }
   }
-
+  const isLoaded = useRef(false);
   //logsAndDateLoader logic
   useEffect(() => {
+    if (isLoaded.current) return;
+    isLoaded.current = true;
     const dataLoader = async () => {
       try {
         const habitsData = await apiFetch("habits", "GET", null);
         const datesData = await apiFetch("dates", "GET", null);
-        const historyData = await apiFetch("habits-history", "GET", null);
-        setHabits(habitsData.habits);
-        setDates(datesData.dates);
-        setCompletionChecks(historyData.completion_checks);
 
         const todayISO = new Date().toISOString().substring(0, 10);
-        setDate({ date: todayISO });
-
         const dateExists = datesData.dates.some((obj) => obj.date === todayISO);
         //If date doesnt exists add date and habits logs (If none of the dates in the Dates array is equal to today´s date add it to the Dates array)
         if (!dateExists) {
           await apiFetch(`dates/${todayISO}`, "POST", null);
           await apiFetch("habits-history/", "POST", { date: todayISO });
           // Add todays date to the Dates array
-          setDates((prev) => [...prev, { date: todayISO }]); //https://react.dev/learn/updating-arrays-in-state
+          setDates([...datesData.dates, { date: todayISO }]); //https://react.dev/learn/updating-arrays-in-state
+        } else {
+          // If date already exists use the one Get got
+          setDates(datesData.dates);
+        }
+
+        //Fetch history with created date (if it was created)
+        const historyData = await apiFetch("habits-history", "GET", null);
+
+        setHabits(habitsData.habits);
+        setCompletionChecks(historyData.completion_checks);
+        setDate({ date: todayISO });
+
+        //Temporary solution (todo: reedo navigation button logic)
+        const total = Math.ceil(
+          historyData.completion_checks.length / habitsPerPage
+        );
+        if (total <= 1) {
+          setIsNextButtonDisabled(true);
+        } else {
+          setIsNextButtonDisabled(false);
         }
       } catch (error) {
         console.error(error);
