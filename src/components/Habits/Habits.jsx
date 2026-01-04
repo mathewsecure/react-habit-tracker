@@ -6,9 +6,9 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import "../../components/HabitsTable.css";
+import "./Habits.css";
 
-const HabitsTable2 = () => {
+const Habits = () => {
   //API call states
   const [habits, setHabits] = useState([]);
   const [dates, setDates] = useState([]);
@@ -188,4 +188,4 @@ const HabitsTable2 = () => {
   );
 };
 
-export default HabitsTable2;
+export default Habits;

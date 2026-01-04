@@ -1,14 +1,13 @@
 import { Link, Outlet } from "react-router-dom";
-import "./Layout.css";
+import "./NavBar.css";
 
-const Layout = () => {
+const NavBar = () => {
   //todo: update section css when done
   return (
     <main>
       <nav>
-        <Link to="/">home</Link>
-        <Link to="/HabitsTable">HabitsTable</Link>
-        <Link to="/HabitsTable2">HabitsTable2</Link>
+        <Link to="/habits">Habits</Link>
+        <Link to="/graphs">Graphs</Link>
       </nav>
       <section>
         <Outlet />
@@ -17,4 +16,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default NavBar;

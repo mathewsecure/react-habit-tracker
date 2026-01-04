@@ -9,9 +9,3 @@ nav {
   justify-content: space-evenly;
   border: 1px solid black;
 }
-
-section {
-  display: flex;
-  flex: 1;
-  border: 1px solid black;
-}

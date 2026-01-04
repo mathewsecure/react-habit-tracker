@@ -5,7 +5,7 @@
  *
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../../components/HabitsTable.css";
 
 const HabitsTable2 = () => {
@@ -28,73 +28,25 @@ const HabitsTable2 = () => {
   const habitsPerPage = 10;
   const totalPages = Math.ceil(completionChecks.length / habitsPerPage);
   const dateObjToString = dates.map((date) => date["date"]);
+  const host = import.meta.env.VITE_API_HOST_TEST;
+  const headers = {
+    authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
+    "Content-Type": "application/json",
+  };
 
-  //API fetching
-  useEffect(() => {
-    const fetchData = async () => {
-      const headers = {
-        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-      };
-      const host = import.meta.env.VITE_API_HOST_TEST;
-
-      const fetcher = async (endpoint) => {
-        const res = await fetch(`${host}/${endpoint}`, { headers });
-        return res.json();
-      };
-
-      const habitsData = await fetcher("habits");
-      setHabits(habitsData.habits);
-      const datesData = await fetcher("dates");
-      setDates(datesData.dates);
-      const historyData = await fetcher("habits-history");
-      setCompletionChecks(historyData.completion_checks);
-      console.log("[state] habits", habits);
-      console.log("[state] dates: ", dates);
-      console.log("[state] completionChecks", completionChecks);
+  //Functions
+  const apiFetch = async (endpoint, method, body) => {
+    const options = {
+      method: method,
+      headers: headers,
     };
-
-    const dateSetter = () => {
-      //todo: add an object with a property date (to be able to then add it to dates state)
-      const newDate = new Date();
-      let dateToISOString = newDate.toISOString().substring(0, 10); //fix use user timezone for that 1 day
-
-      setDate({ date: dateToISOString });
-      console.log("date:", date);
-    };
-
-    const dateAndHabitsLogsUploader = () => {
-      //todo: fix only add one date at a time (also for the fetch below) (use useState)
-
-      // If none of the dates in the Dates array is equal to today´s date add it to the Dates array
-      if (!dates.some((object) => object.date === date.date)) {
-        // Add todays date to the Dates array
-        setDates((prev) => [...prev, { date: date.date }]); // https://react.dev/learn/updating-arrays-in-state
-
-        // Upload date
-        fetch(`${import.meta.env.VITE_API_HOST_TEST}/dates/${date.date}`, {
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-          },
-        });
-
-        // Upload habits logs
-        fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-          },
-          body: JSON.stringify({ date: date.date }),
-        });
-      }
-    };
-    fetchData();
-    dateSetter();
-    dateAndHabitsLogsUploader();
-  }, []);
-
-  //Event handlers
+    if (body !== null) {
+      options.body = JSON.stringify(body);
+    }
+    const res = await fetch(`${host}/${endpoint}`, options);
+    if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+    return res.json();
+  };
   function handlePageChange(page, start, end) {
     setCurrentPage(page);
     setEnd(end);
@@ -110,17 +62,63 @@ const HabitsTable2 = () => {
       setIsPrevButtonDisabled(false);
     }
   }
-  function toggleCheck(inputId, inputDate) {
-    fetch(`${import.meta.env.VITE_API_HOST_TEST}/habits-history/`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-      },
-      body: JSON.stringify({ id: inputId, date: inputDate }),
-    });
+  async function toggleCheck(inputId, inputDate) {
+    try {
+      await apiFetch("habits-history/", "PUT", {
+        id: inputId,
+        date: inputDate,
+      });
+    } catch (error) {
+      console.error("Error at updating check", error);
+    }
   }
+  const isLoaded = useRef(false);
+  //logsAndDateLoader logic
+  useEffect(() => {
+    if (isLoaded.current) return;
+    isLoaded.current = true;
+    const dataLoader = async () => {
+      try {
+        const habitsData = await apiFetch("habits", "GET", null);
+        const datesData = await apiFetch("dates", "GET", null);
 
+        const todayISO = new Date().toISOString().substring(0, 10);
+        const dateExists = datesData.dates.some((obj) => obj.date === todayISO);
+        //If date doesnt exists add date and habits logs (If none of the dates in the Dates array is equal to today´s date add it to the Dates array)
+        if (!dateExists) {
+          await apiFetch(`dates/${todayISO}`, "POST", null);
+          await apiFetch("habits-history/", "POST", { date: todayISO });
+          // Add todays date to the Dates array
+          setDates([...datesData.dates, { date: todayISO }]); //https://react.dev/learn/updating-arrays-in-state
+        } else {
+          // If date already exists use the one Get got
+          setDates(datesData.dates);
+        }
+
+        //Fetch history with created date (if it was created)
+        const historyData = await apiFetch("habits-history", "GET", null);
+
+        setHabits(habitsData.habits);
+        setCompletionChecks(historyData.completion_checks);
+        setDate({ date: todayISO });
+
+        //Temporary solution (todo: reedo navigation button logic)
+        const total = Math.ceil(
+          historyData.completion_checks.length / habitsPerPage
+        );
+        if (total <= 1) {
+          setIsNextButtonDisabled(true);
+        } else {
+          setIsNextButtonDisabled(false);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    dataLoader();
+  }, []);
+
+  console.log(date);
   return (
     <div>
       <table>
@@ -131,27 +129,30 @@ const HabitsTable2 = () => {
           </tr>
         </thead>
         <tbody>
-          {completionChecks.slice(start, end).map((check) => {
-            // todo: need to update selectAllCompletionChecks endpoint to get habit_id in desc order
-            const habitEqualsCheck = habits.find(
-              (habit) => habit.id == check.habit_id
-            ); // store name of habit, to later show it
-            return (
-              <tr key={check.id}>
-                <td>{habitEqualsCheck?.habit}</td>
-                <td>
-                  {check.completion_check}
-                  <input
-                    type="checkbox"
-                    checked={!!check.completion_check}
-                    onChange={() =>
-                      toggleCheck(check.id, dateObjToString[currentPage - 1])
-                    }
-                  />
-                </td>
-              </tr>
-            );
-          })}
+          {
+            // Get the first 10 habits logs
+            completionChecks.slice(start, end).map((check) => {
+              // Store name of habit to later show it
+              const habitEqualsCheck = habits.find(
+                (habit) => habit.id == check.habit_id
+              ); // todo: need to update selectAllCompletionChecks endpoint to get habit_id in desc order
+              return (
+                <tr key={check.id}>
+                  <td>{habitEqualsCheck?.habit}</td>
+                  <td>
+                    {check.completion_check}
+                    <input
+                      type="checkbox"
+                      checked={!!check.completion_check}
+                      onChange={() =>
+                        toggleCheck(check.id, dateObjToString[currentPage - 1])
+                      }
+                    />
+                  </td>
+                </tr>
+              );
+            })
+          }
         </tbody>
       </table>
       <div>
