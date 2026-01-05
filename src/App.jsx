@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Habits from "./components/Habits/Habits";
 import NavBar from "./components/NavBar/NavBar";
-import Graphs from "./components/Graphs/Graphs";
+import Insights from "./components/Insights/Insights";
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
         <Routes>
           <Route path="/" element={<NavBar />}>
             <Route path="habits" element={<Habits />} />
-            <Route path="graphs" element={<Graphs />} />
+            <Route path="insights" element={<Insights />} />
           </Route>
         </Routes>
       </BrowserRouter>
