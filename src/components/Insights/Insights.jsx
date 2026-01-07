@@ -10,6 +10,7 @@ import {
   Legend,
   Title,
 } from "chart.js";
+import { useState } from "react";
 import { Radar } from "react-chartjs-2";
 
 ChartJS.register(
@@ -23,15 +24,32 @@ ChartJS.register(
 );
 
 const Insights = () => {
+  const dates = ["2026-12", "2026-01"];
+  const [date, setDate] = useState(dates[0]);
+  const handleDropdown = (event) => {
+    setDate(event.target.value);
+  };
+  function habitNames() {
+    return [
+      "Eating",
+      "Drinking",
+      "Sleeping",
+      "Designing",
+      "Coding",
+      "Cycling",
+      "Running",
+      "Guitar",
+      "Saying hello",
+      "Karate",
+    ];
+  }
+
+  function habitsData() {
+    return [1, 30, 15, 31, 20, 10, 5, 28, 30, 15];
+  }
+
   const options = {
     responsive: true,
-    plugins: {
-      title: {
-        display: true,
-        text: "Habits completed in a month",
-        font: { size: 18 },
-      },
-    },
     scales: {
       //https://www.chartjs.org/docs/latest/axes/radial/
       r: {
@@ -51,22 +69,10 @@ const Insights = () => {
   };
 
   const data = {
-    labels: [
-      "Eating",
-      "Drinking",
-      "Sleeping",
-      "Designing",
-      "Coding",
-      "Cycling",
-      "Running",
-      "Guitar",
-      "Saying hello",
-      "Karate",
-    ],
+    labels: habitNames(),
     datasets: [
       {
-        label: "Jan 2026",
-        data: [28, 30, 15, 31, 20, 10, 5, 28, 30, 15],
+        data: habitsData(),
         fill: true,
         backgroundColor: "rgba(54, 162, 235, 0.2)",
         borderColor: "rgb(54, 162, 235)",
@@ -79,7 +85,22 @@ const Insights = () => {
   };
 
   return (
-    <div style={{ width: "500px", margin: "0 auto" }}>
+    <div>
+      <h2>Habits completed in a month</h2>
+      <label for="date-select"></label>
+      <select
+        name="date"
+        id="date-select"
+        value={date}
+        onChange={handleDropdown}
+      >
+        {dates.map((date) => (
+          <option key={date} value={date}>
+            {date}
+          </option>
+        ))}
+      </select>
+
       <Radar data={data} options={options} />
     </div>
   );
