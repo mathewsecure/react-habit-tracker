@@ -7,6 +7,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import "./Habits.css";
+import { apiFetch } from "../../utils/apiFetch";
 
 const Habits = () => {
   //API call states
@@ -28,25 +29,6 @@ const Habits = () => {
   const habitsPerPage = 10;
   const totalPages = Math.ceil(completionChecks.length / habitsPerPage);
   const dateObjToString = dates.map((date) => date["date"]);
-  const host = import.meta.env.VITE_API_HOST_TEST;
-  const headers = {
-    authorization: `Bearer ${import.meta.env.VITE_TOKEN_TEST}`,
-    "Content-Type": "application/json",
-  };
-
-  //Functions
-  const apiFetch = async (endpoint, method, body) => {
-    const options = {
-      method: method,
-      headers: headers,
-    };
-    if (body !== null) {
-      options.body = JSON.stringify(body);
-    }
-    const res = await fetch(`${host}/${endpoint}`, options);
-    if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
-    return res.json();
-  };
   function handlePageChange(page, start, end) {
     setCurrentPage(page);
     setEnd(end);
