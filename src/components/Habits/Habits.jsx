@@ -29,6 +29,8 @@ const Habits = () => {
   const habitsPerPage = 10;
   const totalPages = Math.ceil(completionChecks.length / habitsPerPage);
   const dateObjToString = dates.map((date) => date["date"]);
+
+  //Functions
   function handlePageChange(page, start, end) {
     setCurrentPage(page);
     setEnd(end);
@@ -54,8 +56,9 @@ const Habits = () => {
       console.error("Error at updating check", error);
     }
   }
-  const isLoaded = useRef(false);
+
   //logsAndDateLoader logic
+  const isLoaded = useRef(false);
   useEffect(() => {
     if (isLoaded.current) return;
     isLoaded.current = true;
@@ -64,7 +67,7 @@ const Habits = () => {
         const habitsData = await apiFetch("habits", "GET", null);
         const datesData = await apiFetch("dates", "GET", null);
 
-        const todayISO = new Date().toISOString().substring(0, 10);
+        const todayISO = new Intl.DateTimeFormat("sv-SE").format(new Date());
         const dateExists = datesData.dates.some((obj) => obj.date === todayISO);
         //If date doesnt exists add date and habits logs (If none of the dates in the Dates array is equal to today´s date add it to the Dates array)
         if (!dateExists) {

@@ -10,8 +10,9 @@ import {
   Legend,
   Title,
 } from "chart.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Radar } from "react-chartjs-2";
+import { apiFetch } from "../../utils/apiFetch";
 
 ChartJS.register(
   RadialLinearScale,
@@ -24,10 +25,23 @@ ChartJS.register(
 );
 
 const Insights = () => {
-  const dates = ["2025-12", "2026-01"];
-  const [date, setDate] = useState(dates[0]);
+  const [months, setMonths] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState("");
+
+  useEffect(() => {
+    const fetchMonths = async () => {
+      const response = await apiFetch("dates", "GET", null);
+      const formattedMonths = response.dates.map((d) => d.date.slice(0, 7));
+      const uniqueMonths = [...new Set(formattedMonths)];
+      setMonths(uniqueMonths);
+      if (uniqueMonths.length > 0) {
+        setSelectedMonth(uniqueMonths[0]);
+      }
+    };
+    fetchMonths();
+  }, []);
   const handleDropdown = (event) => {
-    setDate(event.target.value);
+    setSelectedMonth(event.target.value);
   };
   function habitNames() {
     //never changes
@@ -46,8 +60,8 @@ const Insights = () => {
   }
 
   const habitsData = {
-    "2025-12": [1, 30, 15, 31, 20, 10, 5, 28, 30, 15],
-    "2026-01": [20, 10, 5, 15, 30, 25, 10, 12, 10, 20],
+    "2026-01": [1, 30, 15, 31, 20, 10, 5, 28, 30, 15],
+    "2026-02": [20, 10, 5, 15, 30, 25, 10, 12, 10, 20],
   };
   const options = {
     responsive: true,
@@ -73,7 +87,7 @@ const Insights = () => {
     labels: habitNames(),
     datasets: [
       {
-        data: habitsData[date],
+        data: habitsData[selectedMonth],
         fill: true,
         backgroundColor: "rgba(54, 162, 235, 0.2)",
         borderColor: "rgb(54, 162, 235)",
@@ -88,16 +102,16 @@ const Insights = () => {
   return (
     <div>
       <h2>Habits completed in a month</h2>
-      <label for="date-select"></label>
+      <label for="month-select"></label>
       <select
-        name="date"
-        id="date-select"
-        value={date}
+        name="month"
+        id="month-select"
+        value={selectedMonth}
         onChange={handleDropdown}
       >
-        {dates.map((date) => (
-          <option key={date} value={date}>
-            {date}
+        {months.map((month) => (
+          <option key={month} value={month}>
+            {month}
           </option>
         ))}
       </select>
