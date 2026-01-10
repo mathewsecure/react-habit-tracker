@@ -27,6 +27,7 @@ ChartJS.register(
 const Insights = () => {
   const [months, setMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
+  const [habitNames, setHabitNames] = useState([]);
 
   useEffect(() => {
     const fetchMonths = async () => {
@@ -38,26 +39,18 @@ const Insights = () => {
         setSelectedMonth(uniqueMonths[0]);
       }
     };
+    const fetchHabitNames = async () => {
+      const response = await apiFetch("habits", "GET", null);
+      const names = response.habits.map((h) => h.habit);
+      setHabitNames(names);
+    };
     fetchMonths();
+    fetchHabitNames();
   }, []);
+
   const handleDropdown = (event) => {
     setSelectedMonth(event.target.value);
   };
-  function habitNames() {
-    //never changes
-    return [
-      "Eating",
-      "Drinking",
-      "Sleeping",
-      "Designing",
-      "Coding",
-      "Cycling",
-      "Running",
-      "Guitar",
-      "Saying hello",
-      "Karate",
-    ];
-  }
 
   const habitsData = {
     "2026-01": [1, 30, 15, 31, 20, 10, 5, 28, 30, 15],
@@ -84,7 +77,7 @@ const Insights = () => {
   };
 
   const data = {
-    labels: habitNames(),
+    labels: habitNames,
     datasets: [
       {
         data: habitsData[selectedMonth],
