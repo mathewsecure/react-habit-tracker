@@ -28,6 +28,7 @@ const Insights = () => {
   const [months, setMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
   const [habitNames, setHabitNames] = useState([]);
+  const [habitsData, setHabitsData] = useState([]);
 
   useEffect(() => {
     const fetchMonths = async () => {
@@ -48,14 +49,23 @@ const Insights = () => {
     fetchHabitNames();
   }, []);
 
+  useEffect(() => {
+    const fetchHabitsHistory = async () => {
+      if (!selectedMonth) return;
+      const response = await apiFetch(
+        `habits-history/${selectedMonth}`,
+        "GET",
+        null
+      );
+      setHabitsData(response[selectedMonth] || []);
+    };
+    fetchHabitsHistory();
+  }, [selectedMonth]);
+
   const handleDropdown = (event) => {
     setSelectedMonth(event.target.value);
   };
 
-  const habitsData = {
-    "2026-01": [1, 30, 15, 31, 20, 10, 5, 28, 30, 15],
-    "2026-02": [20, 10, 5, 15, 30, 25, 10, 12, 10, 20],
-  };
   const options = {
     responsive: true,
     scales: {
@@ -80,7 +90,7 @@ const Insights = () => {
     labels: habitNames,
     datasets: [
       {
-        data: habitsData[selectedMonth],
+        data: habitsData,
         fill: true,
         backgroundColor: "rgba(54, 162, 235, 0.2)",
         borderColor: "rgb(54, 162, 235)",
