@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Habits from "./components/Habits/Habits";
 import NavBar from "./components/NavBar/NavBar";
-import Insights from "./components/Insights/Insights";
+import Summary from "./components/Summary/Summary";
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
         <Routes>
           <Route path="/" element={<NavBar />}>
             <Route path="habits" element={<Habits />} />
-            <Route path="insights" element={<Insights />} />
+            <Route path="summary" element={<Summary />} />
           </Route>
         </Routes>
       </BrowserRouter>

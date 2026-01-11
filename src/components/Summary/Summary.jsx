@@ -24,7 +24,7 @@ ChartJS.register(
   Title
 );
 
-const Insights = () => {
+const Summary = () => {
   const [months, setMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
   const [habitNames, setHabitNames] = useState([]);
@@ -123,4 +123,4 @@ const Insights = () => {
     </div>
   );
 };
-export default Insights;
+export default Summary;

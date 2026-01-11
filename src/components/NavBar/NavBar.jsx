@@ -7,7 +7,7 @@ const NavBar = () => {
     <main>
       <nav>
         <Link to="/habits">Habits</Link>
-        <Link to="/insights">Insights</Link>
+        <Link to="/summary">Summary</Link>
       </nav>
       <section>
         <Outlet />
