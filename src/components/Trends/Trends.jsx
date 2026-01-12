@@ -1,5 +1,5 @@
 const Trends = () => {
-  return <div>Trends</div>;
+  return <h2>Likely to be an habit</h2>;
 };
 
 export default Trends;
