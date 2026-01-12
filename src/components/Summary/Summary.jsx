@@ -42,7 +42,7 @@ const Summary = () => {
     };
     const fetchHabitNames = async () => {
       const response = await apiFetch("habits", "GET", null);
-      const names = response.habits.map((h) => h.habit);
+      const names = response.habits.map((h) => h.habit).reverse(); //todo: temporal fix (later will be without reverse)
       setHabitNames(names);
     };
     fetchMonths();
@@ -101,11 +101,11 @@ const Summary = () => {
       },
     ],
   };
-
+  console.log(habitNames);
   return (
     <div>
       <h2>Habits completed in a month</h2>
-      <label for="month-select"></label>
+      <label htmlFor="month-select"></label>
       <select
         name="month"
         id="month-select"
