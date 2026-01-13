@@ -7,7 +7,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
+import { apiFetch } from "../../utils/apiFetch";
 
 ChartJS.register(
   CategoryScale,
@@ -19,6 +21,19 @@ ChartJS.register(
 );
 
 const Trends = () => {
+  const [streaks, setStreaks] = useState([]);
+  useEffect(() => {
+    const getStreaks = async () => {
+      try {
+        const result = await apiFetch("habits-history/streaks", "GET", null);
+        setStreaks(result);
+      } catch (error) {
+        console.error("Error fetching streaks:", error);
+      }
+    };
+
+    getStreaks();
+  }, []);
   const options = {
     indexAxis: "y",
     responsive: true,
@@ -33,11 +48,10 @@ const Trends = () => {
   };
 
   const data = {
-    labels: ["habit", "habit2"],
+    labels: streaks.map((item) => item.habit),
     datasets: [
       {
-        label: "My First Dataset",
-        data: [65, 100],
+        data: streaks.map((item) => item.streak),
         backgroundColor: ["rgba(255, 99, 132, 0.2)"],
         borderColor: ["rgb(255, 99, 132)"],
         borderWidth: 1,
