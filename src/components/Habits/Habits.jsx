@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./Habits.css";
 import { apiFetch } from "../../utils/apiFetch";
-
+import { TextField, Stack, Typography } from "@mui/material";
 const Habits = () => {
   //API call states
   const [habits, setHabits] = useState([]);
@@ -105,7 +105,23 @@ const Habits = () => {
 
   console.log(date);
   return (
-    <div>
+    <Stack
+      direction="column"
+      spacing={2}
+      sx={{
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Typography variant="h5" gutterBottom>
+        Daily checklist
+      </Typography>
+      <TextField
+        id="filled-basic"
+        label="Enter habit name"
+        variant="filled"
+        slotProps={{ htmlInput: { "data-testid": "…" } }}
+      />
       <table>
         <thead>
           <tr>
@@ -140,35 +156,44 @@ const Habits = () => {
         </tbody>
       </table>
       <div>
-        <button
-          onClick={() =>
-            handlePageChange(
-              currentPage - 1,
-              start - habitsPerPage,
-              end - habitsPerPage
-            )
-          }
-          disabled={isPrevButtonDisabled}
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+          }}
         >
-          Previous
-        </button>
-        <button
-          onClick={() =>
-            handlePageChange(
-              currentPage + 1,
-              start + habitsPerPage,
-              end + habitsPerPage
-            )
-          }
-          disabled={isNextButtonDisabled}
-        >
-          Next
-        </button>
-        <div>
-          Page {currentPage} of {totalPages}
-        </div>
+          <div>
+            {currentPage} of {totalPages}
+          </div>
+          <button
+            onClick={() =>
+              handlePageChange(
+                currentPage - 1,
+                start - habitsPerPage,
+                end - habitsPerPage
+              )
+            }
+            disabled={isPrevButtonDisabled}
+          >
+            Prev
+          </button>
+          <button
+            onClick={() =>
+              handlePageChange(
+                currentPage + 1,
+                start + habitsPerPage,
+                end + habitsPerPage
+              )
+            }
+            disabled={isNextButtonDisabled}
+          >
+            Next
+          </button>
+        </Stack>
       </div>
-    </div>
+    </Stack>
   );
 };
 

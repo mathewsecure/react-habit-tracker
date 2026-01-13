@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { apiFetch } from "../../utils/apiFetch";
+import { Stack, Typography } from "@mui/material";
 
 ChartJS.register(
   CategoryScale,
@@ -60,10 +61,19 @@ const Trends = () => {
   };
 
   return (
-    <div>
-      <h2>Likely to be an habit</h2>
+    <Stack
+      direction="column"
+      spacing={8}
+      sx={{
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <Typography variant="h5" gutterBottom>
+        Likely to be an habit{" "}
+      </Typography>
       <Bar data={data} options={options} />
-    </div>
+    </Stack>
   );
 };
 
