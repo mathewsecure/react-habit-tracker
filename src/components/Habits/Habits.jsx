@@ -125,7 +125,6 @@ const Habits = () => {
                 <tr key={check.id}>
                   <td>{habitEqualsCheck?.habit}</td>
                   <td>
-                    {check.completion_check}
                     <input
                       type="checkbox"
                       checked={!!check.completion_check}
