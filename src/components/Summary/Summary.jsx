@@ -68,6 +68,9 @@ const Summary = () => {
 
   const options = {
     responsive: true,
+    plugins: {
+      legend: { display: false },
+    },
     scales: {
       //https://www.chartjs.org/docs/latest/axes/radial/
       r: {
