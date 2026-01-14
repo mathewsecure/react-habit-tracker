@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { apiFetch } from "../../utils/apiFetch";
-import { Stack, Typography } from "@mui/material";
+import { Container, Stack, Typography } from "@mui/material";
 
 ChartJS.register(
   CategoryScale,
@@ -38,11 +38,20 @@ const Trends = () => {
   const options = {
     indexAxis: "y",
     responsive: true,
+    aspectRatio: 0.8,
     plugins: {
       legend: { display: false },
     },
     scales: {
       y: {
+        beginAtZero: true,
+        ticks: {
+          autoSkip: false,
+        },
+      },
+      x: {
+        min: 0,
+        max: 66,
         beginAtZero: true,
       },
     },
@@ -69,8 +78,10 @@ const Trends = () => {
         alignItems: "center",
       }}
     >
+      <Container maxWidth="sm" />
+
       <Typography variant="h5" gutterBottom>
-        Likely to be an habit{" "}
+        Likely to be an habit (streaks){" "}
       </Typography>
       <Bar data={data} options={options} />
     </Stack>

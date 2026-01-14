@@ -13,7 +13,7 @@ import {
 import { useState, useEffect } from "react";
 import { Radar } from "react-chartjs-2";
 import { apiFetch } from "../../utils/apiFetch";
-import { Typography, Stack } from "@mui/material";
+import { Typography, Stack, Container, TableContainer } from "@mui/material";
 
 ChartJS.register(
   RadialLinearScale,
@@ -107,18 +107,23 @@ const Summary = () => {
   };
   console.log(habitNames);
   return (
-    <Stack
-      direction="column"
-      spacing={2}
-      sx={{
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Typography variant="h5" gutterBottom>
-        Habits completed in a month
-      </Typography>
-      <label htmlFor="month-select"></label>
+    <div>
+      <Stack
+        direction="column"
+        spacing={8}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TableContainer maxWidth="sm" />
+
+        <Typography variant="h5" gutterBottom>
+          Habits completed in a month
+        </Typography>
+        <Radar data={data} options={options} />
+        <label htmlFor="month-select"></label>
+      </Stack>
       <select
         name="month"
         id="month-select"
@@ -131,9 +136,7 @@ const Summary = () => {
           </option>
         ))}
       </select>
-
-      <Radar data={data} options={options} />
-    </Stack>
+    </div>
   );
 };
 export default Summary;

@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./Habits.css";
 import { apiFetch } from "../../utils/apiFetch";
-import { TextField, Stack, Typography } from "@mui/material";
+import { TextField, Stack, Typography, Grid, Container } from "@mui/material";
 const Habits = () => {
   //API call states
   const [habits, setHabits] = useState([]);
@@ -105,63 +105,70 @@ const Habits = () => {
 
   console.log(date);
   return (
-    <Stack
-      direction="column"
-      spacing={2}
-      sx={{
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Typography variant="h5" gutterBottom>
-        Daily checklist
-      </Typography>
-      <TextField
-        id="filled-basic"
-        label="Enter habit name"
-        variant="filled"
-        slotProps={{ htmlInput: { "data-testid": "…" } }}
-      />
-      <table>
-        <thead>
-          <tr>
-            <th>Habit</th>
-            <th>Completion date: {dateObjToString[currentPage - 1]}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            // Get the first 10 habits logs
-            completionChecks.slice(start, end).map((check) => {
-              // Store name of habit to later show it
-              const habitEqualsCheck = habits.find(
-                (habit) => habit.id == check.habit_id
-              ); // todo: need to update selectAllCompletionChecks endpoint to get habit_id in desc order
-              return (
-                <tr key={check.id}>
-                  <td>{habitEqualsCheck?.habit}</td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={!!check.completion_check}
-                      onChange={() =>
-                        toggleCheck(check.id, dateObjToString[currentPage - 1])
-                      }
-                    />
-                  </td>
-                </tr>
-              );
-            })
-          }
-        </tbody>
-      </table>
-      <div>
+    <div>
+      <Stack
+        direction="column"
+        spacing={8}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Container maxWidth="sm" />
+        <Typography variant="h5" gutterBottom>
+          Daily checklist
+        </Typography>
+        {habits.length < 10 && (
+          <TextField
+            id="filled-basic"
+            label="Enter habit name"
+            variant="filled"
+            slotProps={{ htmlInput: { "data-testid": "…" } }}
+          />
+        )}
+        <table>
+          <thead>
+            <tr>
+              <th>Habit</th>
+              <th>Completion date: {dateObjToString[currentPage - 1]}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              // Get the first 10 habits logs
+              completionChecks.slice(start, end).map((check) => {
+                // Store name of habit to later show it
+                const habitEqualsCheck = habits.find(
+                  (habit) => habit.id == check.habit_id
+                ); // todo: need to update selectAllCompletionChecks endpoint to get habit_id in desc order
+                return (
+                  <tr key={check.id}>
+                    <td>{habitEqualsCheck?.habit}</td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={!!check.completion_check}
+                        onChange={() =>
+                          toggleCheck(
+                            check.id,
+                            dateObjToString[currentPage - 1]
+                          )
+                        }
+                      />
+                    </td>
+                  </tr>
+                );
+              })
+            }
+          </tbody>
+        </table>
         <Stack
           direction="row"
-          spacing={2}
+          spacing={1}
           sx={{
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
             alignItems: "flex-start",
+            width: "100%",
           }}
         >
           <div>
@@ -192,8 +199,8 @@ const Habits = () => {
             Next
           </button>
         </Stack>
-      </div>
-    </Stack>
+      </Stack>
+    </div>
   );
 };
 
