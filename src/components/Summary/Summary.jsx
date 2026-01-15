@@ -110,7 +110,7 @@ const Summary = () => {
     <div>
       <Stack
         direction="column"
-        spacing={8}
+        spacing={5}
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
@@ -121,21 +121,22 @@ const Summary = () => {
         <Typography variant="h5" gutterBottom>
           Habits completed in a month
         </Typography>
+        <select
+          name="month"
+          id="month-select"
+          value={selectedMonth}
+          onChange={handleDropdown}
+        >
+          {months.map((month) => (
+            <option key={month} value={month}>
+              {month}
+            </option>
+          ))}
+        </select>
+
         <Radar data={data} options={options} />
         <label htmlFor="month-select"></label>
       </Stack>
-      <select
-        name="month"
-        id="month-select"
-        value={selectedMonth}
-        onChange={handleDropdown}
-      >
-        {months.map((month) => (
-          <option key={month} value={month}>
-            {month}
-          </option>
-        ))}
-      </select>
     </div>
   );
 };

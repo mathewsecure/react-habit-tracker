@@ -72,7 +72,7 @@ const Trends = () => {
   return (
     <Stack
       direction="column"
-      spacing={8}
+      spacing={5}
       sx={{
         justifyContent: "space-between",
         alignItems: "center",

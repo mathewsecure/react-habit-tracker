@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./Habits.css";
 import { apiFetch } from "../../utils/apiFetch";
-import { TextField, Stack, Typography, Grid, Container } from "@mui/material";
+import { TextField, Stack, Typography, Container } from "@mui/material";
 const Habits = () => {
   //API call states
   const [habits, setHabits] = useState([]);
@@ -108,13 +108,14 @@ const Habits = () => {
     <div>
       <Stack
         direction="column"
-        spacing={8}
+        spacing={5}
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
         }}
       >
         <Container maxWidth="sm" />
+
         <Typography variant="h5" gutterBottom>
           Daily checklist
         </Typography>
