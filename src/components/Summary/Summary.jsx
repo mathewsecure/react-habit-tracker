@@ -13,6 +13,7 @@ import {
 import { useState, useEffect } from "react";
 import { Radar } from "react-chartjs-2";
 import { apiFetch } from "../../utils/apiFetch";
+import { Typography, Stack, Container, TableContainer } from "@mui/material";
 
 ChartJS.register(
   RadialLinearScale,
@@ -68,6 +69,9 @@ const Summary = () => {
 
   const options = {
     responsive: true,
+    plugins: {
+      legend: { display: false },
+    },
     scales: {
       //https://www.chartjs.org/docs/latest/axes/radial/
       r: {
@@ -104,22 +108,35 @@ const Summary = () => {
   console.log(habitNames);
   return (
     <div>
-      <h2>Habits completed in a month</h2>
-      <label htmlFor="month-select"></label>
-      <select
-        name="month"
-        id="month-select"
-        value={selectedMonth}
-        onChange={handleDropdown}
+      <Stack
+        direction="column"
+        spacing={5}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
       >
-        {months.map((month) => (
-          <option key={month} value={month}>
-            {month}
-          </option>
-        ))}
-      </select>
+        <TableContainer maxWidth="sm" />
 
-      <Radar data={data} options={options} />
+        <Typography variant="h5" gutterBottom>
+          Habits completed in a month
+        </Typography>
+        <select
+          name="month"
+          id="month-select"
+          value={selectedMonth}
+          onChange={handleDropdown}
+        >
+          {months.map((month) => (
+            <option key={month} value={month}>
+              {month}
+            </option>
+          ))}
+        </select>
+
+        <Radar data={data} options={options} />
+        <label htmlFor="month-select"></label>
+      </Stack>
     </div>
   );
 };

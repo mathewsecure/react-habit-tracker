@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./Habits.css";
 import { apiFetch } from "../../utils/apiFetch";
-
+import { TextField, Stack, Typography, Container } from "@mui/material";
 const Habits = () => {
   //API call states
   const [habits, setHabits] = useState([]);
@@ -106,69 +106,101 @@ const Habits = () => {
   console.log(date);
   return (
     <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Habit</th>
-            <th>Completion date: {dateObjToString[currentPage - 1]}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            // Get the first 10 habits logs
-            completionChecks.slice(start, end).map((check) => {
-              // Store name of habit to later show it
-              const habitEqualsCheck = habits.find(
-                (habit) => habit.id == check.habit_id
-              ); // todo: need to update selectAllCompletionChecks endpoint to get habit_id in desc order
-              return (
-                <tr key={check.id}>
-                  <td>{habitEqualsCheck?.habit}</td>
-                  <td>
-                    {check.completion_check}
-                    <input
-                      type="checkbox"
-                      checked={!!check.completion_check}
-                      onChange={() =>
-                        toggleCheck(check.id, dateObjToString[currentPage - 1])
-                      }
-                    />
-                  </td>
-                </tr>
-              );
-            })
-          }
-        </tbody>
-      </table>
-      <div>
-        <button
-          onClick={() =>
-            handlePageChange(
-              currentPage - 1,
-              start - habitsPerPage,
-              end - habitsPerPage
-            )
-          }
-          disabled={isPrevButtonDisabled}
+      <Stack
+        direction="column"
+        spacing={5}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Container maxWidth="sm" />
+
+        <Typography variant="h5" gutterBottom>
+          Daily checklist
+        </Typography>
+        {habits.length < 10 && (
+          <TextField
+            id="filled-basic"
+            label="Enter habit name"
+            variant="filled"
+            slotProps={{ htmlInput: { "data-testid": "…" } }}
+          />
+        )}
+        <table>
+          <thead>
+            <tr>
+              <th>Habit</th>
+              <th>Completion date: {dateObjToString[currentPage - 1]}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              // Get the first 10 habits logs
+              completionChecks.slice(start, end).map((check) => {
+                // Store name of habit to later show it
+                const habitEqualsCheck = habits.find(
+                  (habit) => habit.id == check.habit_id
+                ); // todo: need to update selectAllCompletionChecks endpoint to get habit_id in desc order
+                return (
+                  <tr key={check.id}>
+                    <td>{habitEqualsCheck?.habit}</td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={!!check.completion_check}
+                        onChange={() =>
+                          toggleCheck(
+                            check.id,
+                            dateObjToString[currentPage - 1]
+                          )
+                        }
+                      />
+                    </td>
+                  </tr>
+                );
+              })
+            }
+          </tbody>
+        </table>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            justifyContent: "flex-end",
+            alignItems: "flex-start",
+            width: "100%",
+          }}
         >
-          Previous
-        </button>
-        <button
-          onClick={() =>
-            handlePageChange(
-              currentPage + 1,
-              start + habitsPerPage,
-              end + habitsPerPage
-            )
-          }
-          disabled={isNextButtonDisabled}
-        >
-          Next
-        </button>
-        <div>
-          Page {currentPage} of {totalPages}
-        </div>
-      </div>
+          <div>
+            {currentPage} of {totalPages}
+          </div>
+          <button
+            onClick={() =>
+              handlePageChange(
+                currentPage - 1,
+                start - habitsPerPage,
+                end - habitsPerPage
+              )
+            }
+            disabled={isPrevButtonDisabled}
+          >
+            Prev
+          </button>
+          <button
+            onClick={() =>
+              handlePageChange(
+                currentPage + 1,
+                start + habitsPerPage,
+                end + habitsPerPage
+              )
+            }
+            disabled={isNextButtonDisabled}
+          >
+            Next
+          </button>
+        </Stack>
+      </Stack>
     </div>
   );
 };
