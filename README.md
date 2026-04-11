@@ -1,11 +1,11 @@
-# Simple habit tracker
+# Habit tracker
 *July 2025 - present*
 
 Habit tracking application built with React and backend with Express.js. The goal of this project is to provide a simple way to track your daily habits, monitor streaks, and visualize your progress over time.
 
 **Backend repository:** [express-habit-tracker](https://github.com/mathewsecure/express-habit-tracker)
 
-> **Note:** This project is currently in active development. Features are subject to change and improvements are being deployed regularly.
+> **Note:** This project is currently in active development. Features are subject to change.
 
 ## Key features
 
