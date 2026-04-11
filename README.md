@@ -26,15 +26,17 @@ Habit tracking application built with React and backend with Express.js. The goa
 ## Technologies used
 
 ### Frontend
-- React (powered by Vite)
+- React
 - Material UI
 - Chart.js
 - Intl API
 
-### Backend (context)
+### Backend
 - Express.js
 - Node.js
 - MySQL
+- Jest
+- Supertest
 - JSON Web Token (JWT)
 
 **Backend repository:** [express-habit-tracker](https://github.com/mathewsecure/express-habit-tracker)
