@@ -95,3 +95,10 @@ POST /dates/:date
   Auth: JWT
   Input:  none (date format: YYYY-MM-DD)
   Output: { "affectedRows": number }
+
+## Git Workflow
+To commit changes:
+1. Run `git add -A` to stage all changes.
+2. Review with `git status` and `git diff --staged`.
+3. Commit using Conventional Commits format: `<type>(<scope>): <description>`.
+4. Wait for user confirmation before running `git push`.
