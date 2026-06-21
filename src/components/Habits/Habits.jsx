@@ -1,109 +1,111 @@
-/**
- *
- * updater function (pass a function not the result of calling it)
- * https://react.dev/learn/queueing-a-series-of-state-updates#what-happens-if-you-update-state-after-replacing-it
- *
- */
-
 import { useEffect, useRef, useState } from "react";
 import "./Habits.css";
 import { apiFetch } from "../../utils/apiFetch";
 import { TextField, Stack, Typography, Container } from "@mui/material";
+
+const habitsPerPage = 10;
+
 const Habits = () => {
-  //API call states
   const [habits, setHabits] = useState([]);
   const [dates, setDates] = useState([]);
   const [completionChecks, setCompletionChecks] = useState([]);
-
-  //Todays date state
-  const [date, setDate] = useState({ date: "" });
-
-  //Pagination states
+  const [todaysDate, setTodaysDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [start, setStart] = useState(0);
-  const [end, setEnd] = useState(10);
-  const [isPrevButtonDisabled, setIsPrevButtonDisabled] = useState(true);
-  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(false);
+  const [newHabit, setNewHabit] = useState("");
 
-  //Constants
-  const habitsPerPage = 10;
-  const totalPages = Math.ceil(completionChecks.length / habitsPerPage);
-  const dateObjToString = dates.map((date) => date["date"]);
-
-  //Functions
-  function handlePageChange(page, start, end) {
-    setCurrentPage(page);
-    setEnd(end);
-    setStart(start);
-    if (page === totalPages) {
-      setIsNextButtonDisabled(true);
-    } else {
-      setIsNextButtonDisabled(false);
-    }
-    if (page === 1) {
-      setIsPrevButtonDisabled(true);
-    } else {
-      setIsPrevButtonDisabled(false);
-    }
-  }
-  async function toggleCheck(inputId, inputDate) {
-    try {
-      await apiFetch("habits-history/", "PUT", {
-        id: inputId,
-        date: inputDate,
-      });
-    } catch (error) {
-      console.error("Error at updating check", error);
-    }
-  }
-
-  //logsAndDateLoader logic
   const isLoaded = useRef(false);
+  const isToggling = useRef(false);
+
+  const todayChecks = completionChecks.slice(-habits.length);
+  const totalPages = Math.ceil(todayChecks.length / habitsPerPage);
+  const start = (currentPage - 1) * habitsPerPage;
+  const end = start + habitsPerPage;
+  const isPrevDisabled = currentPage === 1;
+  const isNextDisabled = currentPage === totalPages || totalPages === 0;
+
   useEffect(() => {
     if (isLoaded.current) return;
     isLoaded.current = true;
+
     const dataLoader = async () => {
       try {
-        const habitsData = await apiFetch("habits", "GET", null);
-        const datesData = await apiFetch("dates", "GET", null);
+        const [habitsData, datesData] = await Promise.all([
+          apiFetch("habits", "GET", null),
+          apiFetch("dates", "GET", null),
+        ]);
 
         const todayISO = new Intl.DateTimeFormat("sv-SE").format(new Date());
         const dateExists = datesData.dates.some((obj) => obj.date === todayISO);
-        //If date doesnt exists add date and habits logs (If none of the dates in the Dates array is equal to today´s date add it to the Dates array)
+
         if (!dateExists) {
           await apiFetch(`dates/${todayISO}`, "POST", null);
-          await apiFetch("habits-history/", "POST", { date: todayISO });
-          // Add todays date to the Dates array
-          setDates([...datesData.dates, { date: todayISO }]); //https://react.dev/learn/updating-arrays-in-state
+          await apiFetch("habits-history", "POST", { date: todayISO });
+          setDates([...datesData.dates, { date: todayISO }]);
         } else {
-          // If date already exists use the one Get got
           setDates(datesData.dates);
         }
 
-        //Fetch history with created date (if it was created)
         const historyData = await apiFetch("habits-history", "GET", null);
 
         setHabits(habitsData.habits);
         setCompletionChecks(historyData.completion_checks);
-        setDate({ date: todayISO });
-
-        //Temporary solution (todo: reedo navigation button logic)
-        const total = Math.ceil(
-          historyData.completion_checks.length / habitsPerPage
-        );
-        if (total <= 1) {
-          setIsNextButtonDisabled(true);
-        } else {
-          setIsNextButtonDisabled(false);
-        }
+        setTodaysDate(todayISO);
       } catch (error) {
         console.error(error);
       }
     };
+
     dataLoader();
   }, []);
 
-  console.log(date);
+  function handlePageChange(newPage) {
+    setCurrentPage(newPage);
+  }
+
+  async function toggleCheck(inputId, inputDate) {
+    if (isToggling.current) return;
+    isToggling.current = true;
+
+    const previousChecks = completionChecks;
+
+    setCompletionChecks((prev) =>
+      prev.map((check) =>
+        check.id === inputId
+          ? { ...check, completion_check: check.completion_check ? 0 : 1 }
+          : check
+      )
+    );
+
+    try {
+      await apiFetch("habits-history", "PUT", {
+        id: inputId,
+        date: inputDate,
+      });
+    } catch (error) {
+      setCompletionChecks(previousChecks);
+      console.error("Error at updating check", error);
+    } finally {
+      isToggling.current = false;
+    }
+  }
+
+  async function handleNewHabitSubmit(e) {
+    e.preventDefault();
+    if (!newHabit.trim()) return;
+
+    try {
+      await apiFetch("habits", "POST", {
+        habit: newHabit.trim(),
+        completed: "0",
+      });
+      setNewHabit("");
+      const habitsData = await apiFetch("habits", "GET", null);
+      setHabits(habitsData.habits);
+    } catch (error) {
+      console.error("Error creating habit", error);
+    }
+  }
+
   return (
     <div>
       <Stack
@@ -119,50 +121,48 @@ const Habits = () => {
         <Typography variant="h5" gutterBottom>
           Daily checklist
         </Typography>
+
         {habits.length < 10 && (
-          <TextField
-            id="filled-basic"
-            label="Enter habit name"
-            variant="filled"
-            slotProps={{ htmlInput: { "data-testid": "…" } }}
-          />
+          <form onSubmit={handleNewHabitSubmit}>
+            <TextField
+              id="new-habit"
+              label="Enter habit name"
+              variant="filled"
+              value={newHabit}
+              onChange={(e) => setNewHabit(e.target.value)}
+              slotProps={{ htmlInput: { "data-testid": "new-habit-input" } }}
+            />
+          </form>
         )}
+
         <table>
           <thead>
             <tr>
               <th>Habit</th>
-              <th>Completion date: {dateObjToString[currentPage - 1]}</th>
+              <th>Completion date: {todaysDate}</th>
             </tr>
           </thead>
           <tbody>
-            {
-              // Get the first 10 habits logs
-              completionChecks.slice(start, end).map((check) => {
-                // Store name of habit to later show it
-                const habitEqualsCheck = habits.find(
-                  (habit) => habit.id == check.habit_id
-                ); // todo: need to update selectAllCompletionChecks endpoint to get habit_id in desc order
-                return (
-                  <tr key={check.id}>
-                    <td>{habitEqualsCheck?.habit}</td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={!!check.completion_check}
-                        onChange={() =>
-                          toggleCheck(
-                            check.id,
-                            dateObjToString[currentPage - 1]
-                          )
-                        }
-                      />
-                    </td>
-                  </tr>
-                );
-              })
-            }
+            {todayChecks.slice(start, end).map((check) => {
+              const habitEqualsCheck = habits.find(
+                (habit) => habit.id === check.habit_id
+              );
+              return (
+                <tr key={check.id}>
+                  <td>{habitEqualsCheck?.habit || "Unknown"}</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={!!check.completion_check}
+                      onChange={() => toggleCheck(check.id, todaysDate)}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+
         <Stack
           direction="row"
           spacing={1}
@@ -176,26 +176,14 @@ const Habits = () => {
             {currentPage} of {totalPages}
           </div>
           <button
-            onClick={() =>
-              handlePageChange(
-                currentPage - 1,
-                start - habitsPerPage,
-                end - habitsPerPage
-              )
-            }
-            disabled={isPrevButtonDisabled}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={isPrevDisabled}
           >
             Prev
           </button>
           <button
-            onClick={() =>
-              handlePageChange(
-                currentPage + 1,
-                start + habitsPerPage,
-                end + habitsPerPage
-              )
-            }
-            disabled={isNextButtonDisabled}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={isNextDisabled}
           >
             Next
           </button>

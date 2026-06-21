@@ -140,6 +140,18 @@ Auth: JWT
 Input: none (date format: YYYY-MM-DD)
 Output: { "affectedRows": number }
 
+## DB Reset (start fresh with 10 habits)
+
+To delete all habits and create exactly 10:
+
+1. `POST /auth/login` with `{ email, password }` → save token
+2. `GET /habits` → list all habits
+3. `DELETE /habits/:id` in loop for each existing habit
+4. `POST /habits` x10 with `{ habit: "Habit N", completed: "0" }`
+
+If DELETE returns 500 (FK constraint), skip that habit and leave it.
+After creating, verify with `GET /habits` that you have exactly 10 (or 16 if old ones remain).
+
 ## Git Workflow
 
 To commit changes:
