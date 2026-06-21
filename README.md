@@ -23,6 +23,31 @@ Habit tracking application built with React and backend with Express.js. The goa
 
 <img width="1450" height="2936" alt="localhost_5173_trends(iPhone 14 Pro Max) (1)-portrait" src="https://github.com/user-attachments/assets/34746430-e4a3-4fde-9b5f-679dd17d0ded" />
 
+## Setup
+
+### 1. Environment variables
+
+Copy `.env` and fill in:
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_API_HOST_TEST` | Backend URL (e.g. `http://localhost:3000`) |
+| `VITE_TOKEN_TEST` | JWT token from `POST /auth/login` |
+
+### 2. Run the app
+
+```bash
+npm install
+npm run dev
+```
+
+### 3. Run tests
+
+```bash
+npm test            # watch mode
+npm run coverage    # with coverage report
+```
+
 ## Technologies used
 
 ### Frontend
@@ -30,6 +55,8 @@ Habit tracking application built with React and backend with Express.js. The goa
 - Material UI
 - Chart.js
 - Intl API
+- Vitest
+- React Testing Library
 
 ### Backend
 - Express.js
