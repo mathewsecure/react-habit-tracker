@@ -100,17 +100,13 @@ describe("Habits component", () => {
 
   it("shows habits without checks as unchecked", async () => {
     const { habits } = createMockData(10);
-    const checksForSome = habits.slice(0, 4).map((h, i) => ({
-      id: i + 1,
-      habit_id: h.id,
-      completion_check: 0,
-    }));
+    const { todayChecks } = createMockData(10);
 
     apiFetch.mockImplementation((endpoint, method) => {
       if (endpoint === "habits") return Promise.resolve({ habits });
       if (endpoint === "dates") return Promise.resolve({ dates: [] });
       if (endpoint === "habits-history" && method === "GET")
-        return Promise.resolve({ completion_checks: checksForSome });
+        return Promise.resolve({ completion_checks: todayChecks });
       return Promise.resolve({ affectedRows: 1 });
     });
 

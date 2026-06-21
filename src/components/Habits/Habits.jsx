@@ -16,29 +16,8 @@ const Habits = () => {
   const isLoaded = useRef(false);
   const isToggling = useRef(false);
 
-  // Map latest check per habit (highest id = most recent = today's)
-  const latestCheckByHabit = {};
-  completionChecks.forEach((check) => {
-    const existing = latestCheckByHabit[check.habit_id];
-    if (!existing || check.id > existing.id) {
-      latestCheckByHabit[check.habit_id] = check;
-    }
-  });
-
-  // Build today's rows: every habit mapped to its latest check (or unchecked)
-  const todayRows = habits.map((habit) => {
-    const check = latestCheckByHabit[habit.id];
-    return {
-      habit,
-      check: check || {
-        id: `virtual-${habit.id}`,
-        habit_id: habit.id,
-        completion_check: 0,
-      },
-    };
-  });
-
-  const totalPages = Math.ceil(todayRows.length / habitsPerPage);
+  const todayChecks = completionChecks.slice(-habits.length);
+  const totalPages = Math.ceil(todayChecks.length / habitsPerPage);
   const start = (currentPage - 1) * habitsPerPage;
   const end = start + habitsPerPage;
   const isPrevDisabled = currentPage === 1;
@@ -83,32 +62,27 @@ const Habits = () => {
     setCurrentPage(newPage);
   }
 
-  async function toggleCheck(row) {
+  async function toggleCheck(id, date) {
     if (isToggling.current) return;
     isToggling.current = true;
 
-    const previousChecks = completionChecks;
-
-    if (typeof row.check.id === "string" && row.check.id.startsWith("virtual-")) {
+    const idx = completionChecks.findIndex((c) => c.id === id);
+    if (idx === -1) {
       isToggling.current = false;
       return;
     }
 
-    setCompletionChecks((prev) =>
-      prev.map((c) =>
-        c.id === row.check.id
-          ? { ...c, completion_check: c.completion_check ? 0 : 1 }
-          : c
-      )
-    );
+    const previousValue = completionChecks[idx].completion_check;
+    const updated = [...completionChecks];
+    updated[idx] = { ...updated[idx], completion_check: previousValue ? 0 : 1 };
+    setCompletionChecks(updated);
 
     try {
-      await apiFetch("habits-history", "PUT", {
-        id: row.check.id,
-        date: todaysDate,
-      });
+      await apiFetch("habits-history", "PUT", { id, date });
     } catch (error) {
-      setCompletionChecks(previousChecks);
+      const reverted = [...completionChecks];
+      reverted[idx] = { ...reverted[idx], completion_check: previousValue };
+      setCompletionChecks(reverted);
       console.error("Error at updating check", error);
     } finally {
       isToggling.current = false;
@@ -169,18 +143,21 @@ const Habits = () => {
             </tr>
           </thead>
           <tbody>
-            {todayRows.slice(start, end).map((row) => (
-              <tr key={row.habit.id}>
-                <td>{row.habit.habit}</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={!!row.check.completion_check}
-                    onChange={() => toggleCheck(row)}
-                  />
-                </td>
-              </tr>
-            ))}
+            {todayChecks.slice(start, end).map((check) => {
+              const habit = habits.find((h) => h.id === check.habit_id);
+              return (
+                <tr key={check.id}>
+                  <td>{habit?.habit || "Unknown"}</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={!!check.completion_check}
+                      onChange={() => toggleCheck(check.id, todaysDate)}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
