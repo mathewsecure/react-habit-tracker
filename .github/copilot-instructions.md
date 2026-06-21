@@ -149,8 +149,7 @@ To delete all habits and create exactly 10:
 3. `DELETE /habits/:id` in loop for each existing habit
 4. `POST /habits` x10 with `{ habit: "Habit N", completed: "0" }`
 
-If DELETE returns 500 (FK constraint), skip that habit and leave it.
-After creating, verify with `GET /habits` that you have exactly 10 (or 16 if old ones remain).
+After creating, verify with `GET /habits` that you have exactly 10.
 
 ## Git Workflow
 

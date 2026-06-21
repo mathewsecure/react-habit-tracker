@@ -7,10 +7,10 @@ vi.mock("../utils/apiFetch", () => ({
   apiFetch: vi.fn(),
 }));
 
-let mockDate = new Date("2026-06-21T12:00:00");
+let mockToday = "2026-06-21";
 
 vi.useFakeTimers({ shouldAdvanceTime: true });
-vi.setSystemTime(mockDate);
+vi.setSystemTime(new Date("2026-06-21T12:00:00"));
 
 function createMockData(habitCount) {
   const habits = Array.from({ length: habitCount }, (_, i) => ({
@@ -33,6 +33,8 @@ function createMockData(habitCount) {
 describe("Habits component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockToday = "2026-06-21";
+    vi.setSystemTime(new Date("2026-06-21T12:00:00"));
   });
 
   it("renders the daily checklist title", async () => {
@@ -71,7 +73,7 @@ describe("Habits component", () => {
     });
   });
 
-  it("displays 10 habits with unchecked checkboxes", async () => {
+  it("displays all habits with unchecked checkboxes", async () => {
     const { habits, todayChecks } = createMockData(10);
 
     apiFetch.mockImplementation((endpoint, method) => {
@@ -96,6 +98,35 @@ describe("Habits component", () => {
     });
   });
 
+  it("shows habits without checks as unchecked", async () => {
+    const { habits } = createMockData(10);
+    const checksForSome = habits.slice(0, 4).map((h, i) => ({
+      id: i + 1,
+      habit_id: h.id,
+      completion_check: 0,
+    }));
+
+    apiFetch.mockImplementation((endpoint, method) => {
+      if (endpoint === "habits") return Promise.resolve({ habits });
+      if (endpoint === "dates") return Promise.resolve({ dates: [] });
+      if (endpoint === "habits-history" && method === "GET")
+        return Promise.resolve({ completion_checks: checksForSome });
+      return Promise.resolve({ affectedRows: 1 });
+    });
+
+    render(<Habits />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Habit 10")).toBeDefined();
+    });
+
+    const checkboxes = screen.getAllByRole("checkbox");
+    expect(checkboxes).toHaveLength(10);
+    checkboxes.forEach((cb) => {
+      expect(cb.checked).toBe(false);
+    });
+  });
+
   it("changes checkbox state on toggle", async () => {
     const { habits, todayChecks } = createMockData(10);
 
@@ -104,6 +135,8 @@ describe("Habits component", () => {
       if (endpoint === "dates") return Promise.resolve({ dates: [] });
       if (endpoint === "habits-history" && method === "GET")
         return Promise.resolve({ completion_checks: todayChecks });
+      if (endpoint === "habits-history" && method === "PUT")
+        return Promise.resolve({ affectedRows: 1 });
       return Promise.resolve({ affectedRows: 1 });
     });
 
@@ -142,6 +175,27 @@ describe("Habits component", () => {
 
     expect(screen.getByText("Prev").disabled).toBe(true);
     expect(screen.getByText("Next").disabled).toBe(true);
+  });
+
+  it("shows pagination with more than 10 habits", async () => {
+    const { habits, todayChecks } = createMockData(16);
+
+    apiFetch.mockImplementation((endpoint, method) => {
+      if (endpoint === "habits") return Promise.resolve({ habits });
+      if (endpoint === "dates") return Promise.resolve({ dates: [] });
+      if (endpoint === "habits-history" && method === "GET")
+        return Promise.resolve({ completion_checks: todayChecks });
+      return Promise.resolve({ affectedRows: 1 });
+    });
+
+    render(<Habits />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/1 of 2/)).toBeDefined();
+    });
+
+    expect(screen.getByText("Prev").disabled).toBe(true);
+    expect(screen.getByText("Next").disabled).toBe(false);
   });
 
   it("shows new habit input when fewer than 10 habits exist", async () => {

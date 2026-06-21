@@ -16,8 +16,29 @@ const Habits = () => {
   const isLoaded = useRef(false);
   const isToggling = useRef(false);
 
-  const todayChecks = completionChecks.slice(-habits.length);
-  const totalPages = Math.ceil(todayChecks.length / habitsPerPage);
+  // Map latest check per habit (highest id = most recent = today's)
+  const latestCheckByHabit = {};
+  completionChecks.forEach((check) => {
+    const existing = latestCheckByHabit[check.habit_id];
+    if (!existing || check.id > existing.id) {
+      latestCheckByHabit[check.habit_id] = check;
+    }
+  });
+
+  // Build today's rows: every habit mapped to its latest check (or unchecked)
+  const todayRows = habits.map((habit) => {
+    const check = latestCheckByHabit[habit.id];
+    return {
+      habit,
+      check: check || {
+        id: `virtual-${habit.id}`,
+        habit_id: habit.id,
+        completion_check: 0,
+      },
+    };
+  });
+
+  const totalPages = Math.ceil(todayRows.length / habitsPerPage);
   const start = (currentPage - 1) * habitsPerPage;
   const end = start + habitsPerPage;
   const isPrevDisabled = currentPage === 1;
@@ -62,24 +83,29 @@ const Habits = () => {
     setCurrentPage(newPage);
   }
 
-  async function toggleCheck(inputId, inputDate) {
+  async function toggleCheck(row) {
     if (isToggling.current) return;
     isToggling.current = true;
 
     const previousChecks = completionChecks;
 
+    if (typeof row.check.id === "string" && row.check.id.startsWith("virtual-")) {
+      isToggling.current = false;
+      return;
+    }
+
     setCompletionChecks((prev) =>
-      prev.map((check) =>
-        check.id === inputId
-          ? { ...check, completion_check: check.completion_check ? 0 : 1 }
-          : check
+      prev.map((c) =>
+        c.id === row.check.id
+          ? { ...c, completion_check: c.completion_check ? 0 : 1 }
+          : c
       )
     );
 
     try {
       await apiFetch("habits-history", "PUT", {
-        id: inputId,
-        date: inputDate,
+        id: row.check.id,
+        date: todaysDate,
       });
     } catch (error) {
       setCompletionChecks(previousChecks);
@@ -143,23 +169,18 @@ const Habits = () => {
             </tr>
           </thead>
           <tbody>
-            {todayChecks.slice(start, end).map((check) => {
-              const habitEqualsCheck = habits.find(
-                (habit) => habit.id === check.habit_id
-              );
-              return (
-                <tr key={check.id}>
-                  <td>{habitEqualsCheck?.habit || "Unknown"}</td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={!!check.completion_check}
-                      onChange={() => toggleCheck(check.id, todaysDate)}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
+            {todayRows.slice(start, end).map((row) => (
+              <tr key={row.habit.id}>
+                <td>{row.habit.habit}</td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={!!row.check.completion_check}
+                    onChange={() => toggleCheck(row)}
+                  />
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
 
